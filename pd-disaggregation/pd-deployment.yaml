@@ -9,8 +9,8 @@ spec:
   # Main/decode pool replica count
   replicas: 1
   model:
-    uri: hf://Qwen/Qwen-0.6B
-    name: Qwen/Qwen-0.6B
+    uri: hf://Qwen/Qwen3-0.6B
+    name: Qwen/Qwen3-0.6B
   router:
     scheduler:
       template:
