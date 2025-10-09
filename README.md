@@ -13,7 +13,7 @@ This guide provides a demonstration of how to get up and running with `llm-d` on
 
 ## Configure RHOAI to Disable Knative Serving
 
-The default serving in RHOAI 2.x leverages Knative Serving (`llm-d` will be the default in 3.x). The following configurations disable Knative.
+RHOAI 2.x leverages Knative Serving by default. The following configurations disable Knative.
 
 ### `DSCInitialization`
 
