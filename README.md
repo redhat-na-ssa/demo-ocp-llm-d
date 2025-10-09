@@ -74,7 +74,8 @@ oc get gateways -n openshift-ingress
 ## Deploy An LLMService with `llm-d`
 
 ```bash
-oc apply -f deployment.yaml
+oc create ns llm-test
+oc apply -f deployment.yaml -n llm-test
 ```
 
 - We can see the `llminferenceservice` is deployed ...
