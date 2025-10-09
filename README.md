@@ -1,6 +1,6 @@
 # `llm-d` Deployment Guide
 
-This guide provides a demonstration of how to get up and running with `llm-d` on RHOAI.
+This guide provides a demonstration of how to get up and running with `llm-d` on RHOAI. This guide is based on https://access.redhat.com/articles/7131048.
 
 ## Prerequisites
 
@@ -9,11 +9,11 @@ This guide provides a demonstration of how to get up and running with `llm-d` on
 ## Install Infra Prereqs
 
 - OpenShift 4.18 - see `ocp-4-18-setup` for manual installation of `llm-d` dependencies
-- OpenShift 4.19 - CRDs needed for `llm-d` are shipped in OCP 4.19
+- OpenShift 4.19 - dependencies needed for `llm-d` are shipped in OCP 4.19
 
 ## Configure RHOAI to Disable Knative Serving
 
-The default serving in RHOAI 2.x leverage Knative Serving (`llm-d` will be the default in 3.x). The following configurations disable Knative.
+The default serving in RHOAI 2.x leverages Knative Serving (`llm-d` will be the default in 3.x). The following configurations disable Knative.
 
 ### `DSCInitialization`
 
