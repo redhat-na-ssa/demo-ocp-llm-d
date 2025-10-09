@@ -1,6 +1,6 @@
 # `llm-d` Deployment Guide
 
-This guide provides a demonstration of how to get up and running with `llm-d` on RHOAI. This guide is based on https://access.redhat.com/articles/7131048.
+This guide provides a demonstration of how to get up and running with `llm-d` on RHOAI based on https://access.redhat.com/articles/7131048.
 
 ## Prerequisites
 
