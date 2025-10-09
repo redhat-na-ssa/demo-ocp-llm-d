@@ -1,0 +1,98 @@
+## `llm-d` Developer Preview Guide
+
+This guide provides a demonstration of how to get up and running with `llm-d` on OCP.
+
+### Prerequisites
+
+- Red Hat OpenShift AI 2.24
+
+### Install Infra Prereqs
+
+- OpenShift 4.18 - see `ocp-4-18-setup`
+- OpenShift 4.19 - the CRDs needed for `llm-d` are included in OCP 4.19
+
+### Configure Your RHOAI Deployment for `llm-d`
+
+#### `DSCInitialization`
+
+- Set the `serviceMesh.managementState` to removed, as shown in the following example (this requires an admin role):
+
+```yaml
+serviceMesh:
+    ...
+    managementState: Removed
+```
+
+- You can do this through the RHOAI UI as shown below:
+
+<details>
+<summary>Click to expand</summary>
+<img src="images/dsci.png" alt="dsci_ui">
+</details>
+
+#### `DSC`
+
+- Create a data science cluster (`DSC`) with the following information set in `kserve` and `serving`:
+
+```yaml
+kserve:
+    defaultDeploymentMode: RawDeployment
+    managementState: Managed
+    ...
+    serving:
+        ...
+        managementState: Removed
+        ...
+```
+
+- You can create the `DSC` through the RHOAI UI as shown below, using the `dsc.yaml` provided in this repo:
+
+<details>
+<summary>Click to expand</summary>
+<img src="images/dsc.png" alt="dsc_ui">
+</details>
+
+### Deploy A Gateway
+
+As described in [Getting started with Gateway API for the Ingress Operator](https://docs.okd.io/latest/networking/ingress_load_balancing/configuring_ingress_cluster_traffic/ingress-gateway-api.html#nw-ingress-gateway-api-enable_ingress-gateway-api):
+- Create a `GatewayClass`
+- Create a `Gateway` named `openshift-ai-inference` in the `openshift-ingress` namespace 
+
+```bash
+oc apply -f gateway.yaml
+```
+
+We can see the gateways is created:
+
+```bash
+oc get gateways -n openshift-ingress
+
+>> NAME                     CLASS   ADDRESS                                                            PROGRAMMED   AGE
+>> openshift-ai-inference   istio   openshift-ai-inference-istio.openshift-ingress.svc.cluster.local   True         9d
+```
+
+### Deploy An LLMService
+
+```bash
+oc apply -f deployment.yaml
+```
+
+- We can see the `llminferenceservice` is deployed ...
+
+```bash
+oc get llminferenceservice
+
+>> NAME   URL   READY   REASON   AGE
+>> qwen         True             9m44s
+```
+
+- ... and that the `router-scheduler` and `vllm` pods are ready to go:
+
+```bash
+oc get pods
+
+>> NAME                                            READY   STATUS    RESTARTS   AGE
+>> qwen-kserve-c59dbf75-5ztf2                      1/1     Running   0          9m15s
+>> qwen-kserve-c59dbf75-dlfj6                      1/1     Running   0          9m15s
+>> qwen-kserve-router-scheduler-67dbbfb947-hn7ln   1/1     Running   0          9m15s
+```
