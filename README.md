@@ -1,19 +1,19 @@
-## `llm-d` Developer Preview Guide
+# `llm-d` Developer Preview Guide
 
-This guide provides a demonstration of how to get up and running with `llm-d` on OCP.
+This guide provides a demonstration of how to get up and running with `llm-d` on RHOAI.
 
-### Prerequisites
+## Prerequisites
 
 - Red Hat OpenShift AI 2.24
 
-### Install Infra Prereqs
+## Install Infra Prereqs
 
 - OpenShift 4.18 - see `ocp-4-18-setup`
 - OpenShift 4.19 - the CRDs needed for `llm-d` are included in OCP 4.19
 
-### Configure Your RHOAI Deployment for `llm-d`
+## Configure Your RHOAI Deployment for `llm-d`
 
-#### `DSCInitialization`
+### `DSCInitialization`
 
 - Set the `serviceMesh.managementState` to removed, as shown in the following example (this requires an admin role):
 
@@ -30,7 +30,7 @@ serviceMesh:
 <img src="images/dsci.png" alt="dsci_ui">
 </details>
 
-#### `DSC`
+### `DSC`
 
 - Create a data science cluster (`DSC`) with the following information set in `kserve` and `serving`:
 
@@ -52,7 +52,7 @@ kserve:
 <img src="images/dsc.png" alt="dsc_ui">
 </details>
 
-### Deploy A Gateway
+## Deploy A Gateway
 
 As described in [Getting started with Gateway API for the Ingress Operator](https://docs.okd.io/latest/networking/ingress_load_balancing/configuring_ingress_cluster_traffic/ingress-gateway-api.html#nw-ingress-gateway-api-enable_ingress-gateway-api):
 - Create a `GatewayClass`
@@ -71,7 +71,7 @@ oc get gateways -n openshift-ingress
 >> openshift-ai-inference   istio   openshift-ai-inference-istio.openshift-ingress.svc.cluster.local   True         9d
 ```
 
-### Deploy An LLMService
+## Deploy An LLMService with `llm-d`
 
 ```bash
 oc apply -f deployment.yaml
@@ -95,4 +95,18 @@ oc get pods
 >> qwen-kserve-c59dbf75-5ztf2                      1/1     Running   0          9m15s
 >> qwen-kserve-c59dbf75-dlfj6                      1/1     Running   0          9m15s
 >> qwen-kserve-router-scheduler-67dbbfb947-hn7ln   1/1     Running   0          9m15s
+```
+
+- We can query the model at the gateway's address:
+
+```bash
+curl -X POST http://openshift-ai-inference-istio.openshift-ingress.svc.cluster.local/llm-test/qwen/v1/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "Qwen/Qwen3-0.6B",
+    "prompt": "Explain the difference between supervised and unsupervised learning in machine learning. Include examples of algorithms used in each type.",
+    "max_tokens": 200,
+    "temperature": 0.7,
+    "top_p": 0.9
+  }'
 ```
