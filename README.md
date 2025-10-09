@@ -136,6 +136,7 @@ curl -X POST http://openshift-ai-inference-istio.openshift-ingress.svc.cluster.l
 oc delete llminferenceservice qwen -n llm-test
 ```
 
-## Links
+## Additional Info
 
 - [Deploying a model by using the Distributed Inference Server with llm-d](https://access.redhat.com/articles/7131048)
+- [LLM-D: GPU-Accelerated Cache-Aware LLM Inference](https://github.com/cnuland/hello-chris-llm-d)
