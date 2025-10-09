@@ -40,7 +40,7 @@ serviceMesh:
 
 <details>
 <summary>Click to expand</summary>
-<img src="images/dsci.png" alt="dsci_ui">
+<img src="docs/images/dsci.png" alt="dsci_ui">
 </details>
 
 ### `DSC`
@@ -62,7 +62,7 @@ kserve:
 
 <details>
 <summary>Click to expand</summary>
-<img src="images/dsc.png" alt="dsc_ui">
+<img src="docs/images/dsc.png" alt="dsc_ui">
 </details>
 
 ## Deploy A Gateway
