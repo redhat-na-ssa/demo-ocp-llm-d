@@ -19,7 +19,7 @@ NOTE: The node sizes below are the **recommended minimum** to select for provisi
 
 ### Install Infra Prereqs
 
-- OpenShift 4.18 - see `ocp-4-18-setup` for manual installation of `llm-d` dependencies
+- OpenShift 4.18 - see [ocp-4.18-prereqs](gitops/ocp-4-18-prereqs) for installation of `llm-d` dependencies
 - OpenShift 4.19 - dependencies needed for `llm-d` are shipped in OCP 4.19
 
 ## Configure RHOAI to Disable Knative Serving
