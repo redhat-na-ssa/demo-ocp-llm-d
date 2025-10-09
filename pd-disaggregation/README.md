@@ -18,3 +18,23 @@ oc get pods -n llm-test
 >> qwen-pd-kserve-prefill-7c4b496d86-9j48g            1/1     Running    0          2m
 >> qwen-pd-kserve-router-scheduler-7fd9898c8c-qtqf9   1/1     Running    0          2m
 ```
+
+- We can query the model at the gateway's address:
+
+```bash
+curl -X POST http://openshift-ai-inference-istio.openshift-ingress.svc.cluster.local/llm-test/qwen-pd/v1/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "Qwen/Qwen3-0.6B",
+    "prompt": "Explain the difference between supervised and unsupervised learning in machine learning. Include examples of algorithms used in each type.",
+    "max_tokens": 200,
+    "temperature": 0.7,
+    "top_p": 0.9
+  }'
+```
+
+## Cleanup
+
+```bash
+oc delete llminferenceservice qwen-pd -n llm-test
+```

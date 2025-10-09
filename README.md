@@ -118,3 +118,9 @@ curl -X POST http://openshift-ai-inference-istio.openshift-ingress.svc.cluster.l
     "top_p": 0.9
   }'
 ```
+
+## Cleanup
+
+```bash
+oc delete llminferenceservice qwen -n llm-test
+```
