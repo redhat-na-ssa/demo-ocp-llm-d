@@ -54,15 +54,16 @@ kserve:
 
 ## Deploy A Gateway
 
-As described in [Getting started with Gateway API for the Ingress Operator](https://docs.okd.io/latest/networking/ingress_load_balancing/configuring_ingress_cluster_traffic/ingress-gateway-api.html#nw-ingress-gateway-api-enable_ingress-gateway-api):
-- Create a `GatewayClass`
-- Create a `Gateway` named `openshift-ai-inference` in the `openshift-ingress` namespace 
+`llm-d` leverages [Gateway API Inference Extension](https://gateway-api-inference-extension.sigs.k8s.io/).
+
+As described in [Getting Started with Gateway API for the Ingress Operator](https://docs.okd.io/latest/networking/ingress_load_balancing/configuring_ingress_cluster_traffic/ingress-gateway-api.html#nw-ingress-gateway-api-enable_ingress-gateway-api), we can can deploy a `GatewayClass` and `Gateway` named
+named `openshift-ai-inference` in the `openshift-ingress` namespace.
 
 ```bash
 oc apply -f gateway.yaml
 ```
 
-We can see the gateways is created:
+We can see the Gateway is deployed:
 
 ```bash
 oc get gateways -n openshift-ingress
@@ -73,6 +74,10 @@ oc get gateways -n openshift-ingress
 
 ## Deploy An LLMService with `llm-d`
 
+With the gateway deployed, we can now deploy an `LLMInferenceService` using KServe, which creates an infernece pool of vLLM servers and an end-point-picker (EPP) for smart scheduling across the vLLM servers.
+
+The `deployment.yaml` contains a sample manifest for deploying:
+ 
 ```bash
 oc create ns llm-test
 oc apply -f deployment.yaml -n llm-test
