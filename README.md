@@ -1,4 +1,4 @@
-# `llm-d` Developer Preview Guide
+# `llm-d` Deployment Guide
 
 This guide provides a demonstration of how to get up and running with `llm-d` on RHOAI.
 
