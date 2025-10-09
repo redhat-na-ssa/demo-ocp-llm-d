@@ -2,11 +2,22 @@
 
 This guide provides a demonstration of how to get up and running with `llm-d` on RHOAI based on https://access.redhat.com/articles/7131048.
 
-## Prerequisites
+## Prerequisites - Get a cluster
 
-- Red Hat OpenShift AI 2.24
+- OpenShift 4.18+
+  - role: `cluster-admin`
 
-## Install Infra Prereqs
+[Red Hat Demo Platform](https://demo.redhat.com) Options (Tested)
+
+NOTE: The node sizes below are the **recommended minimum** to select for provisioning
+
+- <a href="https://demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte.sandbox-ocp.prod&utm_source=webapp&utm_medium=share-link" target="_blank">AWS with OpenShift Open Environment</a>
+  - 1 x Control Plane - `m6a.2xlarge`
+  - 0 x Workers - `m6a.4xlarge`
+- <a href="https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte.ocp-wksp.prod&utm_source=webapp&utm_medium=share-link" target="_blank">Red Hat OpenShift Container Platform Cluster (AWS)</a>
+  - 1 x Control Plane
+
+### Install Infra Prereqs
 
 - OpenShift 4.18 - see `ocp-4-18-setup` for manual installation of `llm-d` dependencies
 - OpenShift 4.19 - dependencies needed for `llm-d` are shipped in OCP 4.19
