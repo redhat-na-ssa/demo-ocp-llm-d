@@ -1,6 +1,10 @@
 apiVersion: v1
 kind: Namespace
 metadata:
+  annotations:
+    openshift.io/display-name: cert-manager Operator for Red Hat OpenShift
+  labels:
+    openshift.io/cluster-monitoring: "true"
   name: cert-manager-operator
 ---
 apiVersion: operators.coreos.com/v1
@@ -8,9 +12,6 @@ kind: OperatorGroup
 metadata:
   name: openshift-cert-manager-operator
   namespace: cert-manager-operator
-spec:
-  targetNamespaces: []
-  spec: {}
 ---
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
@@ -19,6 +20,7 @@ metadata:
   namespace: cert-manager-operator
 spec:
   channel: stable-v1
+  installPlanApproval: Automatic
   name: openshift-cert-manager-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
