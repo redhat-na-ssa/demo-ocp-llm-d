@@ -11,9 +11,9 @@ This guide provides a demonstration of how to get up and running with `llm-d` on
 - OpenShift 4.18 - see `ocp-4-18-setup` for manual installation of `llm-d` dependencies
 - OpenShift 4.19 - CRDs needed for `llm-d` are shipped in OCP 4.19
 
-## Configure RHOAI to Disable KNative Serving
+## Configure RHOAI to Disable Knative Serving
 
-The default serving in RHOAI 2.x leverage KNative Serving (`llm-d` will be the default in 3.x). The following configurations disable KNative.
+The default serving in RHOAI 2.x leverage Knative Serving (`llm-d` will be the default in 3.x). The following configurations disable Knative.
 
 ### `DSCInitialization`
 
@@ -59,7 +59,7 @@ kserve:
 `llm-d` leverages [Gateway API Inference Extension](https://gateway-api-inference-extension.sigs.k8s.io/).
 
 As described in [Getting Started with Gateway API for the Ingress Operator](https://docs.okd.io/latest/networking/ingress_load_balancing/configuring_ingress_cluster_traffic/ingress-gateway-api.html#nw-ingress-gateway-api-enable_ingress-gateway-api), we can can deploy a `GatewayClass` and `Gateway` named
-named `openshift-ai-inference` in the `openshift-ingress` namespace.
+named `openshift-ai-inference` in the `openshift-ingress` namespace:
 
 ```bash
 oc apply -f gateway.yaml
@@ -88,7 +88,7 @@ oc apply -f deployment.yaml -n llm-test
 - We can see the `llminferenceservice` is deployed ...
 
 ```bash
-oc get llminferenceservice
+oc get llminferenceservice -n llm-test
 
 >> NAME   URL   READY   REASON   AGE
 >> qwen         True             9m44s
@@ -97,7 +97,7 @@ oc get llminferenceservice
 - ... and that the `router-scheduler` and `vllm` pods are ready to go:
 
 ```bash
-oc get pods
+oc get pods -n llm-test
 
 >> NAME                                            READY   STATUS    RESTARTS   AGE
 >> qwen-kserve-c59dbf75-5ztf2                      1/1     Running   0          9m15s
