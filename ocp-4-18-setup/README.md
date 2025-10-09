@@ -78,7 +78,3 @@ oc get gateway openshift-ai-inference -n openshift-ingress
 - **Istio CNI**: Container Network Interface plugin for Istio
 - **Istio Control Plane**: Service mesh control plane with gateway API inference extensions
 - **Inference Gateway**: HTTP gateway for routing inference requests
-
-## Next steps
-
-- [Deploying a model by using the Distributed Inference Server with llm-d [Developer preview]](https://access.redhat.com/articles/7131048)
