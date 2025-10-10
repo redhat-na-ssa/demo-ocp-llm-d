@@ -25,6 +25,12 @@ NOTE: The node sizes below are the **recommended minimum** to select for provisi
 until oc apply -k demo/llm-d; do : ; done
 ```
 
+OpenShift 4.18
+
+```sh
+until oc apply -k gitops/ocp-4.18; do : ; done
+```
+
 ## Additional Info
 
 - [Notes](NOTES.md)
