@@ -43,3 +43,4 @@ until oc apply -k gitops/ocp-4.18; do : ; done
 - [ ] Fix
   - `oc apply -f gitops/instance/llm-d/deployment.yaml`
   - `no matches for kind "LLMInferenceService" in version "serving.kserve.io/v1alpha1"
+  - https://github.com/kserve/kserve/blob/master/config/crd/kustomization.yaml
