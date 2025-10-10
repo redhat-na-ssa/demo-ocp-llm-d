@@ -3,6 +3,8 @@ kind: Kustomization
 
 resources:
   # - cert-manager.yaml
+  - dsc.yaml
+  - dsci.yaml
   - lws.yaml
   - openshift-ai-inference-gateway.yaml
   - sail.yaml

@@ -41,7 +41,7 @@ spec:
       defaultLocalQueueName: default
       managementState: Removed
     workbenches:
-      workbenchNamespace: opendatahub
+      workbenchNamespace: rhods-notebooks
       managementState: Removed
     dashboard:
       managementState: Removed
