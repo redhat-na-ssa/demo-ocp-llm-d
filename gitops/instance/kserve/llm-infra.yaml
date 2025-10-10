@@ -3,16 +3,16 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.16.2
-  name: inferenceservices.serving.kserve.io
+  name: llminferenceservices.serving.kserve.io
 spec:
   group: serving.kserve.io
   names:
-    kind: InferenceService
-    listKind: InferenceServiceList
-    plural: inferenceservices
+    kind: LLMInferenceService
+    listKind: LLMInferenceServiceList
+    plural: llminferenceservices
     shortNames:
-    - isvc
-    singular: inferenceservice
+    - llmisvc
+    singular: llminferenceservice
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -22,22 +22,17 @@ spec:
     - jsonPath: .status.conditions[?(@.type=='Ready')].status
       name: Ready
       type: string
-    - jsonPath: .status.components.predictor.traffic[?(@.tag=='prev')].percent
-      name: Prev
-      type: integer
-    - jsonPath: .status.components.predictor.traffic[?(@.latestRevision==true)].percent
-      name: Latest
-      type: integer
-    - jsonPath: .status.components.predictor.traffic[?(@.tag=='prev')].revisionName
-      name: PrevRolledoutRevision
-      type: string
-    - jsonPath: .status.components.predictor.traffic[?(@.latestRevision==true)].revisionName
-      name: LatestReadyRevision
+    - jsonPath: .status.conditions[?(@.type=='Ready')].reason
+      name: Reason
       type: string
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
-    name: v1beta1
+    - jsonPath: .status.addresses[*].url
+      name: URLs
+      priority: 1
+      type: string
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         properties:
