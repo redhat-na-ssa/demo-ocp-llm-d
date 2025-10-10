@@ -19,13 +19,13 @@ NOTE: The node sizes below are the **recommended minimum** to select for provisi
 
 ## Quickstart
 
-- OpenShift 4.18 - See [ocp-4.18-prereqs](gitops/ocp-4-18-prereqs) for installation of `llm-d` dependencies
-
 ```sh
 until oc apply -k demo/llm-d; do : ; done
 ```
 
-OpenShift 4.18
+### OpenShift 4.18
+
+See [ocp-4.18-prereqs](gitops/ocp-4-18-prereqs) for installation of `llm-d` dependencies
 
 ```sh
 until oc apply -k gitops/ocp-4.18; do : ; done
