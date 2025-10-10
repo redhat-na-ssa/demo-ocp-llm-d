@@ -8,8 +8,8 @@ This directory contains the configuration needed to set up the required infrastr
 
 Deploy the prerequisite components first and wait for them to become ready:
 
-```bash
-oc apply -k ./docs/samples/llmisvc/ocp-4-18-setup/prerequisites/
+```sh
+oc apply -k gitops/ocp-4-18-prereqs/
 ```
 
 Wait for the following components to become ready:
@@ -20,12 +20,12 @@ Wait for the following components to become ready:
 
 Check readiness:
 
-```bash
+```sh
 # Wait for cert-manager to be ready
-oc wait --for=condition=CatalogSourcesUnhealthy=false subscription/cert-manager -n openshift-operators --timeout=300s
+oc wait --for=condition=CatalogSourcesUnhealthy=false subscription/openshift-cert-manager-operator -n cert-manager-operator --timeout=300s
 
 # Wait for Service Mesh Operator to be ready
-oc wait --for=condition=CatalogSourcesUnhealthy=false subscription/servicemeshoperator -n openshift-operators --timeout=300s
+oc wait --for=condition=CatalogSourcesUnhealthy=false subscription/servicemeshoperator3 -n openshift-operators --timeout=300s
 
 # Wait for Leader Worker Set Operator to be ready
 oc wait --for=condition=CatalogSourcesUnhealthy=false subscription/leader-worker-set -n openshift-lws-operator --timeout=300s
@@ -39,8 +39,8 @@ oc get crd gatewayclasses.gateway.networking.k8s.io
 
 After prerequisites are ready, deploy the main installation components:
 
-```bash
-oc apply -k ./docs/samples/llmisvc/ocp-4-18-setup/installation/
+```sh
+oc apply -k gitops/installation/
 ```
 
 This will create:
@@ -51,7 +51,7 @@ This will create:
 
 Wait for installation components to be ready:
 
-```bash
+```sh
 # Wait for Leader Worker Set Operator to be available
 oc wait --for=condition=Available leaderworkersetoperator/cluster --timeout=300s
 
@@ -68,6 +68,7 @@ oc get gateway openshift-ai-inference -n openshift-ingress
 ## Components Overview
 
 ### Prerequisites
+
 - **Gateway API v1.2.0**: Provides the standard Gateway API CRDs
 - **cert-manager v1.16.5**: Certificate management for Kubernetes (required by LWS operator)
 - **Service Mesh Operator v3.1.0**: Red Hat's Istio-based service mesh operator

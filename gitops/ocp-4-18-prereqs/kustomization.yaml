@@ -3,6 +3,6 @@ kind: Kustomization
 
 resources:
   - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.0/standard-install.yaml
-  - cert-manager.yaml
-  - gitops/operators/servicemeshoperator3/operator/overlays/stable
-  - lws.yaml
+  - ../operators/cert-manager
+  - ../operators/leader-worker-set
+  - ../operators/servicemeshoperator3/operator/overlays/stable
