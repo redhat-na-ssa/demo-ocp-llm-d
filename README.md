@@ -25,7 +25,7 @@ until oc apply -k demo/llm-d; do : ; done
 
 ### OpenShift 4.18
 
-See [ocp-4.18-prereqs](gitops/ocp-4-18-prereqs) for installation of `llm-d` dependencies
+See [ocp-4.18](gitops/ocp-4.18) for installation of `llm-d` dependencies
 
 ```sh
 until oc apply -k gitops/ocp-4.18; do : ; done
