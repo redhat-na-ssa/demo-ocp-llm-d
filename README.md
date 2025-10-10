@@ -34,3 +34,6 @@ until oc apply -k demo/llm-d; do : ; done
 ## TODO
 
 - [ ] Verify this works in a bare metal install (istio)
+- [ ] Fix
+  - `oc apply -f gitops/instance/llm-d/deployment.yaml`
+  - `no matches for kind "LLMInferenceService" in version "serving.kserve.io/v1alpha1"
