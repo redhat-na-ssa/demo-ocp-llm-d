@@ -71,6 +71,8 @@ oc get gateways -n openshift-ingress
 >> openshift-ai-inference   istio   openshift-ai-inference-istio.openshift-ingress.svc.cluster.local   True         9d
 ```
 
+NOTICE!! - Nothing works beyond this point!
+
 ## Deploy An LLMService with `llm-d`
 
 With the gateway deployed, we can now deploy an `LLMInferenceService` using KServe, which creates an inference pool of vLLM servers and an end-point-picker (EPP) for smart scheduling across the vLLM servers.
