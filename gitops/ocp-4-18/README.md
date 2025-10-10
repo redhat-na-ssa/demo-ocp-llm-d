@@ -40,7 +40,7 @@ oc get crd gatewayclasses.gateway.networking.k8s.io
 After prerequisites are ready, deploy the main installation components:
 
 ```sh
-oc apply -k gitops/ocp-4.18/installation/
+oc apply -k gitops/ocp-4.18/configs
 ```
 
 This will create:
@@ -67,14 +67,14 @@ oc get gateway openshift-ai-inference -n openshift-ingress
 
 ## Components Overview
 
-### Prerequisites
+### Required Operators
 
 - **Gateway API v1.2.0**: Provides the standard Gateway API CRDs
 - **cert-manager v1.16.5**: Certificate management for Kubernetes (required by LWS operator)
 - **Service Mesh Operator v3.1.0**: Red Hat's Istio-based service mesh operator
 - **Leader Worker Set Operator v1.0.0**: Enables deploying pods as a unit of replication for AI/ML inference workloads
 
-### Installation
+### Configurations
 
 - **Istio CNI**: Container Network Interface plugin for Istio
 - **Istio Control Plane**: Service mesh control plane with gateway API inference extensions

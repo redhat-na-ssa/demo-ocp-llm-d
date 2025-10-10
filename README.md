@@ -17,7 +17,20 @@ NOTE: The node sizes below are the **recommended minimum** to select for provisi
 - <a href="https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte.ocp-wksp.prod&utm_source=webapp&utm_medium=share-link" target="_blank">Red Hat OpenShift Container Platform Cluster (AWS)</a>
   - 1 x Control Plane
 
+## Quickstart
+
+- OpenShift 4.18 - See [ocp-4.18-prereqs](gitops/ocp-4-18-prereqs) for installation of `llm-d` dependencies
+
+```sh
+oc apply -k gitops/instance/llm-d
+```
+
 ## Additional Info
 
+- [Notes](NOTES.md)
 - [Deploying a model by using the Distributed Inference Server with llm-d](https://access.redhat.com/articles/7131048)
 - [LLM-D: GPU-Accelerated Cache-Aware LLM Inference](https://github.com/cnuland/hello-chris-llm-d)
+
+## TODO
+
+- [ ] Verify this works in a bare metal install (istio)

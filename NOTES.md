@@ -2,9 +2,8 @@
 
 A list of notes that need to be formalized into documentation
 
-### Install Infra Prereqs
+## Install Infra Prereqs
 
-- OpenShift 4.18 - see [ocp-4.18-prereqs](gitops/ocp-4-18-prereqs) for installation of `llm-d` dependencies
 - OpenShift 4.19 - dependencies needed for `llm-d` are shipped in OCP 4.19
 
 ## Configure RHOAI to Disable Knative Serving
@@ -75,7 +74,7 @@ oc get gateways -n openshift-ingress
 With the gateway deployed, we can now deploy an `LLMInferenceService` using KServe, which creates an infernece pool of vLLM servers and an end-point-picker (EPP) for smart scheduling across the vLLM servers.
 
 The `deployment.yaml` contains a sample manifest for deploying:
- 
+
 ```bash
 oc create ns llm-test
 oc apply -f deployment.yaml -n llm-test
