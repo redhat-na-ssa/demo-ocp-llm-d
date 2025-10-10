@@ -73,6 +73,11 @@ oc get gateways -n openshift-ingress
 
 NOTICE!! - Nothing works beyond this point!
 
+```sh
+# Maybe this is missing?
+# https://kserve.github.io/website/docs/admin-guide/gatewayapi-migration#4-configure-kserve-to-use-gateway-api
+```
+
 ## Deploy An LLMService with `llm-d`
 
 With the gateway deployed, we can now deploy an `LLMInferenceService` using KServe, which creates an inference pool of vLLM servers and an end-point-picker (EPP) for smart scheduling across the vLLM servers.
