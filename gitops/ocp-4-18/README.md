@@ -9,7 +9,7 @@ This directory contains the configuration needed to set up the required infrastr
 Deploy the prerequisite components first and wait for them to become ready:
 
 ```sh
-oc apply -k gitops/ocp-4-18-prereqs/
+oc apply -k gitops/ocp-4-18/prereqs/
 ```
 
 Wait for the following components to become ready:
@@ -40,7 +40,7 @@ oc get crd gatewayclasses.gateway.networking.k8s.io
 After prerequisites are ready, deploy the main installation components:
 
 ```sh
-oc apply -k gitops/installation/
+oc apply -k gitops/ocp-4.18/installation/
 ```
 
 This will create:
