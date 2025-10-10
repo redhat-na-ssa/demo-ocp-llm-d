@@ -6,6 +6,6 @@ resources:
   - gateway-api.yaml
   # - ../../operators/cert-manager
   # - ../../operators/leader-worker-set
-  # - ../../operators/rhoai
+  - ../../operators/rhoai
   - ../../operators/serverless
   - ../../operators/servicemeshoperator3/operator/overlays/stable

@@ -32,14 +32,16 @@ serviceMesh:
 - Create a data science cluster (`DSC`) with the following information set in `kserve` and `serving`:
 
 ```yaml
-kserve:
-    defaultDeploymentMode: RawDeployment
-    managementState: Managed
-    ...
-    serving:
-        ...
-        managementState: Removed
-        ...
+spec:
+  components:
+    kserve:
+      defaultDeploymentMode: RawDeployment
+      managementState: Managed
+      ...
+      serving:
+          ...
+          managementState: Removed
+          ...
 ```
 
 - You can create the `DSC` through the RHOAI UI as shown below, using the `dsc.yaml` provided in this repo:
