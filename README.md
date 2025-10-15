@@ -37,6 +37,7 @@ until oc apply -k gitops/ocp-4.18; do : ; done
 - [Deploying a model by using the Distributed Inference Server with llm-d](https://access.redhat.com/articles/7131048)
 - [LLM-D: GPU-Accelerated Cache-Aware LLM Inference](https://github.com/cnuland/hello-chris-llm-d)
 - [Demystifying Inferencing at Scale with LLM-D on Red Hat Openshift on IBM Cloud](https://community.ibm.com/community/user/blogs/tyler-lisowski/2025/05/30/ai-demystifying-llmd)
+- [OAI Release Notes - 2.24](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.24/html-single/release_notes/index#developer-preview-features_relnotes)
 
 ## TODO
 
