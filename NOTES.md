@@ -128,3 +128,11 @@ curl -X POST http://openshift-ai-inference-istio.openshift-ingress.svc.cluster.l
 ```bash
 oc delete llminferenceservice qwen -n llm-test
 ```
+
+## TODO
+
+- [ ] Verify this works in a bare metal install (istio)
+- [ ] Fix
+  - `oc apply -f gitops/instance/llm-d/deployment.yaml`
+  - `no matches for kind "LLMInferenceService" in version "serving.kserve.io/v1alpha1"
+  - https://github.com/kserve/kserve/blob/master/config/crd/kustomization.yaml
