@@ -11,7 +11,7 @@ metadata:
   name: openshift-ai-inference
   namespace: openshift-ingress
 spec:
-  gatewayClassName: istio
+  gatewayClassName: openshift-default
   listeners:
     - name: http
       port: 80
