@@ -6,8 +6,9 @@ NOTICE: This is a WIP and is not currently functional
 
 ## Prerequisites - Get a cluster
 
-- OpenShift 4.18+
+- OpenShift - 4.18+
   - role: `cluster-admin`
+- OpenShift AI - 2.24+
 
 [Red Hat Demo Platform](https://demo.redhat.com) Options (Tested)
 
