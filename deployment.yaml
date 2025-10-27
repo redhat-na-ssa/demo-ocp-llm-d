@@ -79,4 +79,7 @@ spec:
           periodSeconds: 30
           timeoutSeconds: 30
           failureThreshold: 5
-  
+        tolerations:
+          - effect: NoSchedule
+            key: nvidia.com/gpu
+            operator: Exists
