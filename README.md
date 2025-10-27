@@ -1,8 +1,10 @@
 # `llm-d` Deployment Guide
 
-This guide provides a demonstration of how to get up and running with `llm-d` on RHOAI based on https://access.redhat.com/articles/7131048.
+This guide provides a demonstration of how to get up and running with `llm-d` on RHOAI 2.25 and OCP 4.18 based on:
+- https://access.redhat.com/articles/7131048
+- https://github.com/opendatahub-io/kserve/tree/release-v0.15/docs/samples/llmisvc/ocp-4-18-setup
 
-## Prerequisites - Get a cluster
+## Prerequisites - Get a RHOAI cluster
 
 - OpenShift - 4.18+
   - role: `cluster-admin`
@@ -10,13 +12,15 @@ This guide provides a demonstration of how to get up and running with `llm-d` on
 
 >> NOTE: this demo assumes RHOAI 2.25 operator is already installed on the cluster
 
-### OpenShift 4.18
+### OpenShift 4.18 Prereqs
 
-See [ocp-4.18](gitops/ocp-4.18) for installation of `llm-d` dependencies
+See [ocp-4.18](gitops/ocp-4.18) for installation of `llm-d` dependencies (Gateway API)
 
 ```sh
 until oc apply -k gitops/ocp-4.18; do : ; done
 ```
+
+>> NOTE: the Gateway API dependencies are vendored as part of OpenShift 4.19+
 
 ## Deploy
 
