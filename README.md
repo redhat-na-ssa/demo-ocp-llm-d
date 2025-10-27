@@ -10,8 +10,6 @@ This guide provides a demonstration of how to get up and running with `llm-d` on
   - role: `cluster-admin`
 - OpenShift AI - 2.25+
 
->> NOTE: this demo assumes RHOAI 2.25 operator is already installed on the cluster
-
 ### OpenShift 4.18 Prereqs
 
 See [ocp-4.18](gitops/ocp-4.18) for installation of `llm-d` dependencies (Gateway API)
@@ -20,7 +18,7 @@ See [ocp-4.18](gitops/ocp-4.18) for installation of `llm-d` dependencies (Gatewa
 until oc apply -k gitops/ocp-4.18; do : ; done
 ```
 
->> NOTE: the Gateway API dependencies are vendored as part of OpenShift 4.19+
+> NOTE: the Gateway API dependencies are vendored as part of OpenShift 4.19+
 
 ## Deploy
 
