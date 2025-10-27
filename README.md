@@ -4,7 +4,7 @@ This guide provides a demonstration of how to get up and running with `llm-d` on
 
 ## Prerequisites
 
-- Red Hat OpenShift AI 2.24
+- Red Hat OpenShift AI 2.25
 
 ## Install Infra Prereqs
 
