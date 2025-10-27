@@ -4,4 +4,4 @@ kind: Kustomization
 resources:
   - openshift-ai-inference-gateway.yaml
   - sail.yaml
-  - ../../instance/rhoai
+  - rhoai

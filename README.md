@@ -8,15 +8,7 @@ This guide provides a demonstration of how to get up and running with `llm-d` on
   - role: `cluster-admin`
 - OpenShift AI - 2.25+
 
-[Red Hat Demo Platform](https://demo.redhat.com) Options (Tested)
-
-NOTE: The node sizes below are the **recommended minimum** to select for provisioning
-
-- <a href="https://demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte.sandbox-ocp.prod&utm_source=webapp&utm_medium=share-link" target="_blank">AWS with OpenShift Open Environment</a>
-  - 1 x Control Plane - `m6a.2xlarge`
-  - 0 x Workers - `m6a.4xlarge`
-- <a href="https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte.ocp-wksp.prod&utm_source=webapp&utm_medium=share-link" target="_blank">Red Hat OpenShift Container Platform Cluster (AWS)</a>
-  - 1 x Control Plane
+>> NOTE: this demo assumes RHOAI 2.25 operator is already installed on the cluster
 
 ### OpenShift 4.18
 
@@ -26,7 +18,7 @@ See [ocp-4.18](gitops/ocp-4.18) for installation of `llm-d` dependencies
 until oc apply -k gitops/ocp-4.18; do : ; done
 ```
 
-## Quickstart
+## Deploy
 
 ```sh
 until oc apply -k demo/llm-d; do : ; done
