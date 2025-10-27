@@ -13,6 +13,7 @@ spec:
     codeflare:
       managementState: Removed
     kserve:
+      defaultDeploymentMode: RawDeployment
       nim:
         managementState: Removed
       rawDeploymentServiceConfig: Headed
@@ -41,7 +42,7 @@ spec:
       defaultLocalQueueName: default
       managementState: Removed
     workbenches:
-      workbenchNamespace: opendatahub
+      workbenchNamespace: rhods-notebooks
       managementState: Removed
     dashboard:
       managementState: Removed
