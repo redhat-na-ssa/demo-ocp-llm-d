@@ -108,7 +108,7 @@ oc get pods -n llm-test
 - We can query the model at the gateway's address:
 
 ```bash
-curl -X POST http://openshift-ai-inference-istio.openshift-ingress.svc.cluster.local/llm-test/qwen/v1/completions \
+curl -X POST http://af64a0ecc80f5435e8fb331ed80c72e6-756717891.us-east-2.elb.amazonaws.com/llm-test/qwen/v1/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "Qwen/Qwen3-0.6B",
