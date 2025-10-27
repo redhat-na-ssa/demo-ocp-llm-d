@@ -26,7 +26,7 @@ until oc apply -k gitops/ocp-4.18; do : ; done
 until oc apply -k deployment; do : ; done
 ```
 
-## Send a Request
+### Send a Request
 
 - Find the URL of the Gateway:
 
@@ -37,7 +37,7 @@ NAMESPACE           NAME                     CLASS   ADDRESS                    
 openshift-ingress   openshift-ai-inference   istio   a5b04a5e001d74035aa36adde93e98f5-1797832142.us-east-2.elb.amazonaws.com   True         32m
 ```
 
-- Send an inference request:
+- Send an HTTP request with the OpenAI API:
 ```
 curl -X POST http://a5b04a5e001d74035aa36adde93e98f5-1797832142.us-east-2.elb.amazonaws.com/llm-test/qwen/v1/completions \
   -H "Content-Type: application/json" \
