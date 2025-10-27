@@ -26,6 +26,24 @@ until oc apply -k gitops/ocp-4.18; do : ; done
 until oc apply -k deployment; do : ; done
 ```
 
+## Send a Request
+
+- Find the URL of the Gateway:
+
+```sh
+oc get gateways -A
+
+NAMESPACE           NAME                     CLASS   ADDRESS                                                                   PROGRAMMED   AGE
+openshift-ingress   openshift-ai-inference   istio   a5b04a5e001d74035aa36adde93e98f5-1797832142.us-east-2.elb.amazonaws.com   True         32m
+```
+
+- Send an inference request:
+```
+curl -X POST http://a5b04a5e001d74035aa36adde93e98f5-1797832142.us-east-2.elb.amazonaws.com/llm-test/qwen/v1/completions \
+  -H "Content-Type: application/json" \
+  -d '{ "model": "Qwen/Qwen3-0.6B", "prompt": "Explain the difference between supervised and unsupervised learning in machine learning. Include examples of algorithms used in each type.", "max_tokens": 200, "temperature": 0.7, "top_p": 0.9 }'
+```
+
 ## Additional Info
 
 - [Notes](NOTES.md)
