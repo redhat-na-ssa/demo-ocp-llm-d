@@ -3,5 +3,4 @@ kind: Kustomization
 
 resources:
   - deployment.yaml
-  - gateway.yaml
   - namespace.yaml
