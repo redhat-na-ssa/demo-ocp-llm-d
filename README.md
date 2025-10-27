@@ -25,7 +25,7 @@ until oc apply -k gitops/ocp-4.18; do : ; done
 ## Deploy
 
 ```sh
-until oc apply -k demo/llm-d; do : ; done
+until oc apply -k deployment; do : ; done
 ```
 
 ## Additional Info
