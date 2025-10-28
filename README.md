@@ -22,7 +22,7 @@ until oc apply -k gitops/ocp-4.18; do : ; done
 
 ### Configure RHOAI Cluster for `llmd`
 
-Disable KNative serving in RHOAI. 
+Disable Knative Serving in RHOAI. 
 
 ```sh
 until oc apply -k gitops/rhoai; do : ; done
