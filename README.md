@@ -32,6 +32,19 @@ oc apply -k https://github.com/redhat-na-ssa/llm-d-demo/demo/web-terminal
 $(wtoctl | grep 'oc delete')
 ```
 
+Setup cluster nodes
+
+```sh
+# scale machineset to at least 1
+ocp_machineset_scale 1
+
+# setup L40 single GPU machine set
+ocp_aws_machineset_create_gpu g6.2xlarge
+
+# setup nvidia autoscaling
+apply_firmly demo/nvidia-gpu-autoscale/
+```
+
 ### OpenShift 4.18
 
 > **⚠️ Disclaimer**: This configuration is not officially supported and is provided for experimental/development
