@@ -1,0 +1,58 @@
+apiVersion: datasciencecluster.opendatahub.io/v1
+kind: DataScienceCluster
+metadata:
+  name: default-dsc
+  labels:
+    app.kubernetes.io/created-by: opendatahub-operator
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: datasciencecluster
+    app.kubernetes.io/part-of: opendatahub-operator
+spec:
+  components:
+    codeflare:
+      managementState: Removed
+    kserve:
+      defaultDeploymentMode: RawDeployment
+      nim:
+        managementState: Removed
+      rawDeploymentServiceConfig: Headed
+      serving:
+        ingressGateway:
+          certificate:
+            type: OpenshiftDefaultIngress
+        managementState: Removed
+        name: knative-serving
+      managementState: Managed
+    modelregistry:
+      registriesNamespace: odh-model-registries
+      managementState: Removed
+    feastoperator:
+      managementState: Removed
+    trustyai:
+      eval:
+        lmeval:
+          permitCodeExecution: deny
+          permitOnline: deny
+      managementState: Removed
+    ray:
+      managementState: Removed
+    kueue:
+      defaultClusterQueueName: default
+      defaultLocalQueueName: default
+      managementState: Removed
+    workbenches:
+      workbenchNamespace: rhods-notebooks
+      managementState: Removed
+    dashboard:
+      managementState: Removed
+    modelmeshserving:
+      managementState: Removed
+    llamastackoperator:
+      managementState: Removed
+    datasciencepipelines:
+      argoWorkflowsControllers:
+        managementState: Removed
+      managementState: Removed
+    trainingoperator:
+      managementState: Removed
