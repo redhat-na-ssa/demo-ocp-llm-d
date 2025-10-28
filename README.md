@@ -12,7 +12,7 @@ This guide provides a demonstration of how to get up and running with `llm-d` on
 
 ### OpenShift 4.18 Prereqs
 
-See [ocp-4.18](gitops/ocp-4.18) for installation of `llm-d` dependencies (Gateway API)
+Install prereqs of `llm-d` (Gateway API):
 
 ```sh
 until oc apply -k gitops/ocp-4.18; do : ; done
