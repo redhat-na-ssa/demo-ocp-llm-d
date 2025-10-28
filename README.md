@@ -6,9 +6,6 @@ This guide provides a demonstration of how to get up and running with `llm-d` on
 - https://github.com/opendatahub-io/kserve/tree/release-v0.15/docs/samples/llmisvc/ocp-4-18-setup
 - https://github.com/llm-d/llm-d/blob/main/guides/precise-prefix-cache-aware/README.md
 
-> **⚠️ Disclaimer**: This configuration is not officially supported and is provided for experimental/development
-> purposes only.
-
 ## Prerequisites - Get a cluster
 
 - OpenShift - 4.18+
@@ -36,6 +33,9 @@ $(wtoctl | grep 'oc delete')
 ```
 
 ### OpenShift 4.18
+
+> **⚠️ Disclaimer**: This configuration is not officially supported and is provided for experimental/development
+> purposes only.
 
 See [ocp-4.18](gitops/ocp-4.18) for installation of `llm-d` dependencies
 
