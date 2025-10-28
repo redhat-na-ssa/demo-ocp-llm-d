@@ -2,6 +2,7 @@ apiVersion: serving.kserve.io/v1alpha1
 kind: LLMInferenceService
 metadata:
   name: qwen
+  namespace: llm-test
 spec:
   replicas: 2
   model:
@@ -10,6 +11,10 @@ spec:
   router:
     scheduler:
       template:
+        tolerations:
+          - key: "nvidia.com/gpu"
+            operator: "Exists"
+            effect: "NoSchedule"
         containers:
           - name: main
             args:
@@ -49,7 +54,7 @@ spec:
                 - name: default
                   plugins:
                     - pluginRef: prefix-cache-scorer
-                      weight: 2.0
+                      weight: 5.0
                     - pluginRef: queue-scorer
                       weight: 1.0
                     - pluginRef: kv-cache-scorer
@@ -58,17 +63,23 @@ spec:
     route: { }
     gateway: { }
   template:
+    tolerations:
+      - key: "nvidia.com/gpu"
+        operator: "Exists"
+        effect: "NoSchedule"
     containers:
       - name: main
         env:
+          - name: VLLM_ADDITIONAL_ARGS
+            value: "--disable-uvicorn-access-log"
         resources:
           limits:
-            cpu: '4'
-            memory: 32Gi
+            cpu: '1'
+            memory: 8Gi
             nvidia.com/gpu: "1"
           requests:
-            cpu: '4'
-            memory: 32Gi
+            cpu: '1'
+            memory: 8Gi
             nvidia.com/gpu: "1"
         livenessProbe:
           httpGet:
