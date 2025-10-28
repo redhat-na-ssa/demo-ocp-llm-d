@@ -66,8 +66,8 @@ spec:
     containers:
       - name: main
         env:
-          # - name: VLLM_ADDITIONAL_ARGS
-          #   value: "--disable-uvicorn-access-log"
+          - name: VLLM_ADDITIONAL_ARGS
+            value: "--disable-uvicorn-access-log"
         resources:
           limits:
             cpu: '1'
