@@ -12,7 +12,7 @@ This guide shows how to get up and running with `llm-d` on RHOAI 2.25 and OCP 4.
 
 ### OpenShift 4.18 Prereqs
 
-Install prereqs of `llm-d` (Gateway API):
+Install prereqs of `llm-d` (Gateway API and Istio):
 
 ```sh
 until oc apply -k gitops/ocp-4.18; do : ; done
