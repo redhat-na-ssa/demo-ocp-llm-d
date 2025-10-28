@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - banner-demo.yaml
+  - ../../gitops/instance/llm-d
 
 components:
   - ../../gitops/branding
