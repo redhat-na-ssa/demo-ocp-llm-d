@@ -109,18 +109,17 @@ oc get pods -n llm-test
 >> qwen-kserve-router-scheduler-67dbbfb947-hn7ln   1/1     Running   0          9m15s
 ```
 
-- We can query the model at the gateway's address:
+Send an HTTP request with the OpenAI API:
 
-```bash
-curl -X POST http://openshift-ai-inference-istio.openshift-ingress.svc.cluster.local/llm-test/qwen/v1/completions \
+```sh
+export INFERENCE_URL=$(
+  oc -n openshift-ingress get gateway openshift-ai-inference \
+    -o jsonpath='{.status.addresses[0].value}'
+)
+
+curl -X POST http://${INFERENCE_URL}/llm-test/qwen/v1/completions \
   -H "Content-Type: application/json" \
-  -d '{
-    "model": "Qwen/Qwen3-0.6B",
-    "prompt": "Explain the difference between supervised and unsupervised learning in machine learning. Include examples of algorithms used in each type.",
-    "max_tokens": 200,
-    "temperature": 0.7,
-    "top_p": 0.9
-  }'
+  -d '{ "model": "Qwen/Qwen3-0.6B", "prompt": "Explain the difference between supervised and unsupervised learning in machine learning. Include examples of algorithms used in each type.", "max_tokens": 200, "temperature": 0.7, "top_p": 0.9 }'
 ```
 
 ## Cleanup
