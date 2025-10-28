@@ -1,14 +1,19 @@
 # `llm-d` Deployment Guide
 
-This guide provides a demonstration of how to get up and running with `llm-d` on RHOAI based on https://access.redhat.com/articles/7131048.
+This guide provides a demonstration of how to get up and running with `llm-d` on RHOAI based on:
 
-NOTICE: This is a WIP and is not currently functional
+- https://access.redhat.com/articles/7131048
+- https://github.com/opendatahub-io/kserve/tree/release-v0.15/docs/samples/llmisvc/ocp-4-18-setup
+- https://github.com/llm-d/llm-d/blob/main/guides/precise-prefix-cache-aware/README.md
+
+> **⚠️ Disclaimer**: This configuration is not officially supported and is provided for experimental/development
+> purposes only.
 
 ## Prerequisites - Get a cluster
 
 - OpenShift - 4.18+
   - role: `cluster-admin`
-- OpenShift AI - 2.24+
+- OpenShift AI - 2.25+
 
 [Red Hat Demo Platform](https://demo.redhat.com) Options (Tested)
 
@@ -48,4 +53,4 @@ until oc apply -k demo/llm-d; do : ; done
 - [Deploying a model by using the Distributed Inference Server with llm-d](https://access.redhat.com/articles/7131048)
 - [LLM-D: GPU-Accelerated Cache-Aware LLM Inference](https://github.com/cnuland/hello-chris-llm-d)
 - [Demystifying Inferencing at Scale with LLM-D on Red Hat Openshift on IBM Cloud](https://community.ibm.com/community/user/blogs/tyler-lisowski/2025/05/30/ai-demystifying-llmd)
-- [OAI Release Notes - 2.24](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.24/html-single/release_notes/index#developer-preview-features_relnotes)
+- [OAI Release Notes - 2.25](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.25/html-single/release_notes/index#developer-preview-features_relnotes)
