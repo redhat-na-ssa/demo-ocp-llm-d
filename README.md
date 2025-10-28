@@ -20,7 +20,19 @@ until oc apply -k gitops/ocp-4.18; do : ; done
 
 > NOTE: the Gateway API dependencies are vendored as part of OpenShift 4.19+
 
+### Configure RHOAI Cluster for `llmd`
+
+Disable KNative serving in RHOAI. 
+
+```sh
+until oc apply -k gitops/rhoai; do : ; done
+```
+
+>> NOTE: `llm-d` will become the default in RHOAI 3.x
+
 ## Deploy
+
+Deploy the gateway and inference service.
 
 ```sh
 until oc apply -k deployment; do : ; done
@@ -38,6 +50,7 @@ openshift-ingress   openshift-ai-inference   istio   a5b04a5e001d74035aa36adde93
 ```
 
 - Send an HTTP request with the OpenAI API:
+
 ```
 curl -X POST http://a5b04a5e001d74035aa36adde93e98f5-1797832142.us-east-2.elb.amazonaws.com/llm-test/qwen/v1/completions \
   -H "Content-Type: application/json" \
