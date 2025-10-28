@@ -1,0 +1,2184 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    openshift.io/display-name: NVIDIA GPU Operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+  name: nvidia-gpu-operator
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    openshift.io/display-name: Node Feature Discovery Operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+  name: openshift-nfd
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: job-aro-gpu-machineset
+  namespace: nvidia-gpu-operator
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: job-aws-gpu-machineset
+  namespace: nvidia-gpu-operator
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: job-gpu-console-plugin
+  namespace: nvidia-gpu-operator
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    autoscale: config
+  name: job-setup-autoscale
+  namespace: openshift-machine-api
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: job-aro-gpu-machineset
+rules:
+- apiGroups:
+  - machine.openshift.io
+  resources:
+  - machinesets
+  verbs:
+  - '*'
+- apiGroups:
+  - autoscaling.openshift.io
+  resources:
+  - machineautoscalers
+  verbs:
+  - '*'
+- apiGroups:
+  - ""
+  resourceNames:
+  - azure-credentials
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: job-aws-gpu-machineset
+rules:
+- apiGroups:
+  - machine.openshift.io
+  resources:
+  - machinesets
+  verbs:
+  - '*'
+- apiGroups:
+  - autoscaling.openshift.io
+  resources:
+  - machineautoscalers
+  verbs:
+  - '*'
+- apiGroups:
+  - ""
+  resourceNames:
+  - aws-creds
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: job-gpu-console-plugin
+rules:
+- apiGroups:
+  - operator.openshift.io
+  resources:
+  - consoles
+  verbs:
+  - get
+  - list
+  - patch
+  - label
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    autoscale: config
+  name: job-setup-autoscale
+rules:
+- apiGroups:
+  - machine.openshift.io
+  resources:
+  - machinesets
+  verbs:
+  - '*'
+- apiGroups:
+  - autoscaling.openshift.io
+  resources:
+  - machineautoscalers
+  verbs:
+  - '*'
+- apiGroups:
+  - ""
+  resourceNames:
+  - aws-creds
+  - azure-credentials
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: job-aro-gpu-machineset
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: job-aro-gpu-machineset
+subjects:
+- kind: ServiceAccount
+  name: job-aro-gpu-machineset
+  namespace: nvidia-gpu-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: job-aws-gpu-machineset
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: job-aws-gpu-machineset
+subjects:
+- kind: ServiceAccount
+  name: job-aws-gpu-machineset
+  namespace: nvidia-gpu-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: job-gpu-console-plugin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: job-gpu-console-plugin
+subjects:
+- kind: ServiceAccount
+  name: job-gpu-console-plugin
+  namespace: nvidia-gpu-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    autoscale: config
+  name: job-setup-autoscale
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: job-setup-autoscale
+subjects:
+- kind: ServiceAccount
+  name: job-setup-autoscale
+  namespace: openshift-machine-api
+---
+apiVersion: v1
+data:
+  dcgm-metrics.csv: |
+    # see https://github.com/NVIDIA/dcgm-exporter/blob/main/etc/dcp-metrics-included.csv
+    DCGM_FI_PROF_GR_ENGINE_ACTIVE, gauge, gpu utilization.
+    DCGM_FI_DEV_MEM_COPY_UTIL, gauge, mem utilization.
+    DCGM_FI_DEV_ENC_UTIL, gauge, enc utilization.
+    DCGM_FI_DEV_DEC_UTIL, gauge, dec utilization.
+    DCGM_FI_DEV_FB_FREE, gauge, mem free.
+    DCGM_FI_DEV_FB_USED, gauge, mem used.
+    DCGM_FI_DEV_GPU_UTIL, gauge, gpu utilization.
+    DCGM_FI_DEV_POWER_USAGE, gauge, power usage.
+    DCGM_FI_DEV_POWER_MGMT_LIMIT_MAX, gauge, power mgmt limit.
+    DCGM_FI_DEV_GPU_TEMP, gauge, gpu temp.
+    DCGM_FI_DEV_SM_CLOCK, gauge, sm clock.
+    DCGM_FI_DEV_MAX_SM_CLOCK, gauge, max sm clock.
+    DCGM_FI_DEV_MEM_CLOCK, gauge, mem clock.
+    DCGM_FI_DEV_MAX_MEM_CLOCK, gauge, max mem clock.
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/component: console-plugin-nvidia-gpu
+    app.kubernetes.io/instance: console-plugin-nvidia-gpu
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: console-plugin-nvidia-gpu
+    app.kubernetes.io/part-of: console-plugin-nvidia-gpu
+    app.kubernetes.io/version: latest
+    helm.sh/chart: console-plugin-nvidia-gpu-0.2.4
+  name: console-plugin-nvidia-gpu
+  namespace: nvidia-gpu-operator
+---
+apiVersion: v1
+data:
+  default: 'version: v1'
+  time-sliced-2: |-
+    version: v1
+    sharing:
+      timeSlicing:
+        resources:
+          - name: nvidia.com/gpu
+            replicas: 2
+  time-sliced-4: |-
+    version: v1
+    sharing:
+      timeSlicing:
+        resources:
+          - name: nvidia.com/gpu
+            replicas: 4
+  time-sliced-99: |-
+    version: v1
+    sharing:
+      timeSlicing:
+        resources:
+          - name: nvidia.com/gpu
+            replicas: 99
+kind: ConfigMap
+metadata:
+  name: device-plugin-config
+  namespace: nvidia-gpu-operator
+---
+apiVersion: v1
+data:
+  job.sh: |
+    #!/bin/bash
+
+    # shellcheck disable=SC1091
+    . /scripts/ocp.sh
+
+    INSTANCE_TYPE=${INSTANCE_TYPE:-Standard_NC4as_T4_v3}
+
+    ocp_aro_cluster || exit 0
+    ocp_aro_machineset_create_gpu "${INSTANCE_TYPE}"
+    ocp_machineset_create_autoscale
+    # ocp_machineset_taint_gpu
+  ocp.sh: |+
+    #!/bin/bash
+    # shellcheck disable=SC2120
+
+    # See https://github.com/redhat-na-ssa/demo-ai-gitops-catalog
+
+    ocp_aro_cluster(){
+      TARGET_NS=kube-system
+      OBJ=secret/azure-credentials
+      echo "Checking if ${OBJ} exists in ${TARGET_NS} namespace"
+      oc -n "${TARGET_NS}" get "${OBJ}" -o name > /dev/null 2>&1 || return 1
+      echo "ARO cluster detected"
+    }
+
+    ocp_aro_machineset_create_gpu(){
+      # https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/gpu-accelerated/nvv3-series?tabs=sizebasic#sizes-in-series
+      # https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/gpu-accelerated/ncast4v3-series?tabs=sizebasic#sizes-in-series
+
+      INSTANCE_TYPE=${1:-Standard_NC4as_T4_v3}
+      SHORT_NAME=${2:-${INSTANCE_TYPE//_/-}}
+      SHORT_NAME=${SHORT_NAME,,}
+
+      ocp_aro_machineset_clone_worker "${INSTANCE_TYPE}"
+
+      MACHINE_SET_TYPE=$(oc -n openshift-machine-api get machinesets.machine.openshift.io -o name | grep "/${SHORT_NAME}" | head -n1)
+
+      echo "Patching: ${MACHINE_SET_TYPE}"
+
+      # cosmetic
+      oc -n openshift-machine-api \
+        patch "${MACHINE_SET_TYPE}" \
+        --type=merge --patch '{"spec":{"template":{"spec":{"metadata":{"labels":{"node-role.kubernetes.io/gpu":""}}}}}}'
+
+      # should use the default profile
+      # oc -n openshift-machine-api \
+      #   patch "${MACHINE_SET_TYPE}" \
+      #   --type=merge --patch '{"spec":{"template":{"spec":{"metadata":{"labels":{"nvidia.com/device-plugin.config":"no-time-sliced"}}}}}}'
+
+      # should help auto provisioner
+      # oc -n openshift-machine-api \
+      #   patch "${MACHINE_SET_TYPE}" \
+      #   --type=merge --patch '{"spec":{"template":{"spec":{"metadata":{"labels":{"cluster-api/accelerator":"nvidia-gpu"}}}}}}'
+
+      # oc -n openshift-machine-api \
+      #   patch "${MACHINE_SET_TYPE}" \
+      #   --type=merge --patch '{"metadata":{"labels":{"cluster-api/accelerator":"nvidia-gpu"}}}'
+
+      oc -n openshift-machine-api \
+        patch "${MACHINE_SET_TYPE}" \
+        --type=merge --patch '{"spec":{"template":{"spec":{"providerSpec":{"value":{"vmSize":"'"${INSTANCE_TYPE}"'"}}}}}}'
+    }
+
+    ocp_aro_machineset_clone_worker(){
+      [ -z "${1}" ] && \
+      echo "
+        usage: ocp_aro_machineset_clone_worker < instance type, default Standard_D4s_v3 > < machine set name >
+      "
+
+      ocp_aro_cluster || return
+
+      INSTANCE_TYPE=${1:-Standard_D4s_v3}
+      SHORT_NAME=${2:-${INSTANCE_TYPE//_/-}}
+      SHORT_NAME=${SHORT_NAME,,}
+
+      MACHINE_SET_NAME=$(oc -n openshift-machine-api get machinesets.machine.openshift.io -o name | grep "/${SHORT_NAME}" | head -n1)
+      MACHINE_SET_WORKER=$(oc -n openshift-machine-api get machinesets.machine.openshift.io -o name | grep worker | head -n1)
+
+      # check for an existing instance machine set
+      if [ -n "${MACHINE_SET_NAME}" ]; then
+        echo "Exists: machineset - ${MACHINE_SET_NAME}"
+      else
+        echo "Creating: machineset - ${SHORT_NAME}"
+
+        oc -n openshift-machine-api \
+          get "${MACHINE_SET_WORKER}" -o yaml | \
+            sed '/machine/ s/'"${MACHINE_SET_WORKER##*/}"'/'"${SHORT_NAME}"'/g
+              /^  name:/ s/'"${MACHINE_SET_WORKER##*/}"'/'"${SHORT_NAME}"'/g
+              /name/ s/'"${MACHINE_SET_WORKER##*/}"'/'"${SHORT_NAME}"'/g
+              s/vmSize.*/vmSize: '"${INSTANCE_TYPE}"'/
+              /cluster-api-autoscaler/d
+              /uid:/d
+              /generation:/d
+              /resourceVersion:/d
+              /creationTimestamp:/d
+              s/replicas.*/replicas: 0/' | \
+          oc apply -f -
+
+        MACHINE_SET_NAME="machinesets.machine.openshift.io/${SHORT_NAME}"
+      fi
+
+      # cosmetic pretty
+      oc -n openshift-machine-api \
+        patch "${MACHINE_SET_NAME}" \
+        --type=merge --patch '{"spec":{"template":{"spec":{"metadata":{"labels":{"node-role.kubernetes.io/'"${SHORT_NAME}"'":""}}}}}}'
+    }
+
+
+    ocp_machineset_create_autoscale(){
+      MACHINE_MIN=${1:-0}
+      MACHINE_MAX=${2:-4}
+      MACHINE_SETS=${3:-$(oc -n openshift-machine-api get machinesets.machine.openshift.io -o name | sed 's@.*/@@' )}
+
+      for machine_set in ${MACHINE_SETS}
+      do
+    cat << YAML | oc apply -f -
+    apiVersion: "autoscaling.openshift.io/v1beta1"
+    kind: "MachineAutoscaler"
+    metadata:
+      name: "${machine_set}"
+      namespace: "openshift-machine-api"
+    spec:
+      minReplicas: ${MACHINE_MIN}
+      maxReplicas: ${MACHINE_MAX}
+      scaleTargetRef:
+        apiVersion: machine.openshift.io/v1beta1
+        kind: MachineSet
+        name: "${machine_set}"
+    YAML
+      done
+    }
+
+    ocp_machineset_patch_accelerator(){
+      MACHINE_SET_NAME=${1:-gpu}
+      LABEL=${2:-nvidia-gpu}
+
+      oc -n openshift-machine-api \
+        patch machineset "${MACHINE_SET_NAME}" \
+        --type=merge --patch '{"spec":{"template":{"spec":{"metadata":{"labels":{"cluster-api/accelerator":"'"${LABEL}"'"}}}}}}'
+
+      oc -n openshift-machine-api \
+        patch machineset "${MACHINE_SET_NAME}" \
+        --type=merge --patch '{"spec":{"template":{"spec":{"metadata":{"labels":{"node-role.kubernetes.io/gpu":""}}}}}}'
+    }
+
+    ocp_machineset_taint_gpu(){
+      SHORT_NAME=${1:-g4dn}
+      MACHINE_SET=$(oc -n openshift-machine-api get machinesets.machine.openshift.io -o name | grep "${SHORT_NAME}" | head -n1)
+
+      echo "Patching: ${MACHINE_SET}"
+
+      # taint nodes for gpu-only workloads
+      oc -n openshift-machine-api \
+        patch "${MACHINE_SET}" \
+        --type=merge --patch '{"spec":{"template":{"spec":{"taints":[{"key":"nvidia.com/gpu","value":"","effect":"NoSchedule"}]}}}}'
+    }
+
+kind: ConfigMap
+metadata:
+  name: job-aro-gpu-machineset
+  namespace: nvidia-gpu-operator
+---
+apiVersion: v1
+data:
+  job.sh: |
+    #!/bin/bash
+
+    # shellcheck disable=SC1091
+    . /scripts/ocp.sh
+
+    INSTANCE_TYPE=${INSTANCE_TYPE:-g4dn.4xlarge}
+
+    ocp_aws_cluster || exit 0
+    ocp_aws_machineset_create_gpu "${INSTANCE_TYPE}"
+    ocp_machineset_create_autoscale
+    ocp_aws_machineset_fix_storage
+    # ocp_machineset_taint_gpu
+  ocp.sh: |+
+    #!/bin/bash
+    # shellcheck disable=SC2120
+
+    # See https://github.com/redhat-na-ssa/demo-ai-gitops-catalog
+
+
+    ocp_aws_cluster(){
+      TARGET_NS=kube-system
+      OBJ=secret/aws-creds
+      echo "Checking if ${OBJ} exists in ${TARGET_NS} namespace"
+      oc -n "${TARGET_NS}" get "${OBJ}" -o name > /dev/null 2>&1 || return 1
+      echo "AWS cluster detected"
+    }
+
+    ocp_aws_machineset_create_gpu(){
+      INSTANCE_TYPE=${1:-g4dn.4xlarge}
+
+      # https://aws.amazon.com/ec2/instance-types/g4
+      # single gpu: g4dn.{2,4,8,16}xlarge
+      # multi gpu:  g4dn.12xlarge
+      # practical:  g4ad.4xlarge
+      # a100 (MIG): p4d.24xlarge
+      # h100 (MIG): p5.48xlarge
+
+      # https://aws.amazon.com/ec2/instance-types/dl1
+      # 8 x gaudi:  dl1.24xlarge
+
+      [ -z "${1}" ] && \
+      echo "
+        usage: ocp_aws_machineset_create_gpu < instance type, default ${INSTANCE_TYPE} >
+      "
+
+      ocp_aws_machineset_clone_worker "${INSTANCE_TYPE}"
+
+      MACHINE_SET_TYPE=$(oc -n openshift-machine-api get machinesets.machine.openshift.io -o name | grep "${INSTANCE_TYPE//./-}" | head -n1)
+
+      echo "Patching: ${MACHINE_SET_TYPE}"
+
+      # cosmetic
+      oc -n openshift-machine-api \
+        patch "${MACHINE_SET_TYPE}" \
+        --type=merge --patch '{"spec":{"template":{"spec":{"metadata":{"labels":{"node-role.kubernetes.io/gpu":""}}}}}}'
+
+      # should use the default profile
+      # oc -n openshift-machine-api \
+      #   patch "${MACHINE_SET_TYPE}" \
+      #   --type=merge --patch '{"spec":{"template":{"spec":{"metadata":{"labels":{"nvidia.com/device-plugin.config":"no-time-sliced"}}}}}}'
+
+      # should help auto provisioner
+      # oc -n openshift-machine-api \
+      #   patch "${MACHINE_SET_TYPE}" \
+      #   --type=merge --patch '{"spec":{"template":{"spec":{"metadata":{"labels":{"cluster-api/accelerator":"nvidia-gpu"}}}}}}'
+
+      # oc -n openshift-machine-api \
+      #   patch "${MACHINE_SET_TYPE}" \
+      #   --type=merge --patch '{"metadata":{"labels":{"cluster-api/accelerator":"nvidia-gpu"}}}'
+
+      oc -n openshift-machine-api \
+        patch "${MACHINE_SET_TYPE}" \
+        --type=merge --patch '{"spec":{"template":{"spec":{"providerSpec":{"value":{"instanceType":"'"${INSTANCE_TYPE}"'"}}}}}}'
+
+    #  # fix storage
+
+    # cat << YAML > /tmp/patch.yaml
+    # spec:
+    #   template:
+    #     spec:
+    #       providerSpec:
+    #         value:
+    #           blockDevices:
+    #             - ebs:
+    #                 volumeSize: 120
+    #                 volumeType: gp3
+    # YAML
+
+    #   oc -n openshift-machine-api \
+    #     patch "${MACHINE_SET_TYPE}" \
+    #     --type=merge --patch "$(cat /tmp/patch.yaml)"
+    }
+
+    ocp_aws_machineset_clone_worker(){
+      INSTANCE_TYPE=${1:-g4dn.4xlarge}
+
+      [ -z "${1}" ] && \
+      echo "
+        usage: ocp_aws_machineset_clone_worker < instance type, default ${INSTANCE_TYPE} > < machine set name >
+      "
+
+      ocp_aws_cluster || return
+
+      MACHINE_SET_NAME=${2:-${INSTANCE_TYPE//./-}}
+      MACHINE_SET_WORKER=$(oc -n openshift-machine-api get machinesets.machine.openshift.io -o name | grep worker | head -n1)
+
+      # check for an existing instance machine set
+      if oc -n openshift-machine-api get machineset "${MACHINE_SET_NAME}" > /dev/null ; then
+        echo "Exists: machineset - ${MACHINE_SET_NAME}"
+      else
+        echo "Creating: machineset - ${MACHINE_SET_NAME}"
+        oc -n openshift-machine-api \
+          get "${MACHINE_SET_WORKER}" -o yaml | \
+            sed '/machine/ s/'"${MACHINE_SET_WORKER##*/}"'/'"${MACHINE_SET_NAME}"'/g
+              /^  name:/ s/'"${MACHINE_SET_WORKER##*/}"'/'"${MACHINE_SET_NAME}"'/g
+              /name/ s/'"${MACHINE_SET_WORKER##*/}"'/'"${MACHINE_SET_NAME}"'/g
+              s/instanceType.*/instanceType: '"${INSTANCE_TYPE}"'/
+              /cluster-api-autoscaler/d
+              /uid:/d
+              /generation:/d
+              /resourceVersion:/d
+              /creationTimestamp:/d
+              s/replicas.*/replicas: 0/' | \
+          oc apply -f -
+      fi
+
+      # fix aws storage
+      ocp_aws_machineset_fix_storage "${MACHINE_SET_NAME}"
+
+      # cosmetic pretty
+      # oc -n openshift-machine-api \
+      #   patch "${MACHINE_SET_NAME}" \
+      #   --type=merge --patch '{"spec":{"template":{"spec":{"metadata":{"labels":{"node-role.kubernetes.io/'"${SHORT_NAME}"'":""}}}}}}'
+    }
+
+    ocp_aws_machineset_fix_storage(){
+      DEFAULT_MACHINE_SETS=$(oc -n openshift-machine-api get machineset -o name | sed 's@.*/@@g')
+      MACHINE_SETS=${1:-$DEFAULT_MACHINE_SETS}
+      HD_SIZE=${2:-200}
+
+      for machine_set in ${MACHINE_SETS}
+      do
+        echo "Patching aws storage for machineset: ${machine_set}"
+        oc -n openshift-machine-api \
+          get machineset "${machine_set}" -o yaml | \
+            sed 's/volumeSize: .*/volumeSize: '"${HD_SIZE}"'/
+              s/volumeType: gp2/volumeType: gp3/' | \
+          oc apply -f -
+      done
+    }
+
+    ocp_machineset_create_autoscale(){
+      MACHINE_MIN=${1:-0}
+      MACHINE_MAX=${2:-4}
+      MACHINE_SETS=${3:-$(oc -n openshift-machine-api get machinesets.machine.openshift.io -o name | sed 's@.*/@@' )}
+
+      for machine_set in ${MACHINE_SETS}
+      do
+    cat << YAML | oc apply -f -
+    apiVersion: "autoscaling.openshift.io/v1beta1"
+    kind: "MachineAutoscaler"
+    metadata:
+      name: "${machine_set}"
+      namespace: "openshift-machine-api"
+    spec:
+      minReplicas: ${MACHINE_MIN}
+      maxReplicas: ${MACHINE_MAX}
+      scaleTargetRef:
+        apiVersion: machine.openshift.io/v1beta1
+        kind: MachineSet
+        name: "${machine_set}"
+    YAML
+      done
+    }
+
+    ocp_machineset_patch_accelerator(){
+      MACHINE_SET_NAME=${1:-gpu}
+      LABEL=${2:-nvidia-gpu}
+
+      oc -n openshift-machine-api \
+        patch machineset "${MACHINE_SET_NAME}" \
+        --type=merge --patch '{"spec":{"template":{"spec":{"metadata":{"labels":{"cluster-api/accelerator":"'"${LABEL}"'"}}}}}}'
+
+      oc -n openshift-machine-api \
+        patch machineset "${MACHINE_SET_NAME}" \
+        --type=merge --patch '{"spec":{"template":{"spec":{"metadata":{"labels":{"node-role.kubernetes.io/gpu":""}}}}}}'
+    }
+
+    ocp_machineset_taint_gpu(){
+      SHORT_NAME=${1:-g4dn}
+      MACHINE_SET=$(oc -n openshift-machine-api get machinesets.machine.openshift.io -o name | grep "${SHORT_NAME}" | head -n1)
+
+      echo "Patching: ${MACHINE_SET}"
+
+      # taint nodes for gpu-only workloads
+      oc -n openshift-machine-api \
+        patch "${MACHINE_SET}" \
+        --type=merge --patch '{"spec":{"template":{"spec":{"taints":[{"key":"nvidia.com/gpu","value":"","effect":"NoSchedule"}]}}}}'
+    }
+
+kind: ConfigMap
+metadata:
+  name: job-aws-gpu-machineset
+  namespace: nvidia-gpu-operator
+---
+apiVersion: v1
+data:
+  console-plugin-job.sh: |
+    #!/usr/bin/bash
+
+    enable_console_plugin(){
+      [ -z "${PLUGIN_NAME}" ] && return 1
+
+      echo "Attempting to enable ${PLUGIN_NAME} plugin"
+      echo ""
+
+      # Create the plugins section on the object if it doesn't exist
+      if [ -z "$(oc get consoles.operator.openshift.io cluster -o=jsonpath='{.spec.plugins}')" ]; then
+        echo "Creating plugins object"
+        oc patch consoles.operator.openshift.io cluster --patch '{ "spec": { "plugins": [] } }' --type=merge
+      fi
+
+      INSTALLED_PLUGINS=$(oc get consoles.operator.openshift.io cluster -o=jsonpath='{.spec.plugins}')
+      echo "Current plugins:"
+      echo "${INSTALLED_PLUGINS}"
+
+      if [[ "${INSTALLED_PLUGINS}" == *"${PLUGIN_NAME}"* ]]; then
+          echo "${PLUGIN_NAME} is already enabled"
+      else
+          echo "Enabling plugin: ${PLUGIN_NAME}"
+          oc patch consoles.operator.openshift.io cluster --type=json --patch '[{"op": "add", "path": "/spec/plugins/-", "value": "'"${PLUGIN_NAME}"'"}]'
+      fi
+
+      sleep 6
+      oc get consoles.operator.openshift.io cluster -o=jsonpath='{.spec.plugins}'
+    }
+
+    enable_console_plugin
+kind: ConfigMap
+metadata:
+  name: job-gpu-console-plugin
+  namespace: nvidia-gpu-operator
+---
+apiVersion: v1
+data:
+  dcgm-exporter-dashboard.json: |
+    {
+      "__requires": [
+        {
+          "type": "panel",
+          "id": "gauge",
+          "name": "Gauge",
+          "version": ""
+        },
+        {
+          "type": "grafana",
+          "id": "grafana",
+          "name": "Grafana",
+          "version": "6.7.3"
+        },
+        {
+          "type": "panel",
+          "id": "graph",
+          "name": "Graph",
+          "version": ""
+        },
+        {
+          "type": "datasource",
+          "id": "prometheus",
+          "name": "Prometheus",
+          "version": "1.0.0"
+        }
+      ],
+      "annotations": {
+        "list": [
+          {
+            "$$hashKey": "object:192",
+            "builtIn": 1,
+            "datasource": "-- Grafana --",
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "description": "This dashboard is to display the metrics from DCGM Exporter on a Kubernetes (1.19+) cluster",
+      "editable": true,
+      "gnetId": 12239,
+      "graphTooltip": 0,
+      "id": null,
+      "iteration": 1588401887165,
+      "links": [],
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$datasource",
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 18,
+            "x": 0,
+            "y": 0
+          },
+          "hiddenSeries": false,
+          "id": 12,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "nullPointMode": "null",
+          "options": {
+            "dataLinks": []
+          },
+          "percentage": false,
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "DCGM_FI_DEV_GPU_TEMP{instance=~\"$instance\", gpu=~\"$gpu\"}",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "GPU {{gpu}}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "GPU Temperature",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "celsius",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "datasource": "$datasource",
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 18,
+            "y": 0
+          },
+          "id": 14,
+          "options": {
+            "fieldOptions": {
+              "calcs": [
+                "mean"
+              ],
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "mappings": [],
+                "max": 100,
+                "min": 0,
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "#EAB839",
+                      "value": 83
+                    },
+                    {
+                      "color": "red",
+                      "value": 87
+                    }
+                  ]
+                },
+                "unit": "celsius"
+              },
+              "overrides": [],
+              "values": false
+            },
+            "orientation": "auto",
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true
+          },
+          "pluginVersion": "6.7.3",
+          "targets": [
+            {
+              "expr": "avg(DCGM_FI_DEV_GPU_TEMP{instance=~\"$instance\", gpu=~\"$gpu\"})",
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "GPU Avg. Temp",
+          "type": "gauge"
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$datasource",
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 18,
+            "x": 0,
+            "y": 8
+          },
+          "hiddenSeries": false,
+          "id": 10,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "nullPointMode": "null",
+          "options": {
+            "dataLinks": []
+          },
+          "percentage": false,
+          "pluginVersion": "6.5.2",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "DCGM_FI_DEV_POWER_USAGE{instance=~\"$instance\", gpu=~\"$gpu\"}",
+              "interval": "",
+              "legendFormat": "GPU {{gpu}}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "GPU Power Usage",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "watt",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "cacheTimeout": null,
+          "datasource": "$datasource",
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 18,
+            "y": 8
+          },
+          "id": 16,
+          "links": [],
+          "options": {
+            "fieldOptions": {
+              "calcs": [
+                "sum"
+              ],
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "mappings": [],
+                "max": 2400,
+                "min": 0,
+                "nullValueMode": "connected",
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "#EAB839",
+                      "value": 1800
+                    },
+                    {
+                      "color": "red",
+                      "value": 2200
+                    }
+                  ]
+                },
+                "unit": "watt"
+              },
+              "overrides": [],
+              "values": false
+            },
+            "orientation": "horizontal",
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true
+          },
+          "pluginVersion": "6.7.3",
+          "targets": [
+            {
+              "expr": "sum(DCGM_FI_DEV_POWER_USAGE{instance=~\"$instance\", gpu=~\"$gpu\"})",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "GPU Power Total",
+          "type": "gauge"
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$datasource",
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 16
+          },
+          "hiddenSeries": false,
+          "id": 2,
+          "interval": "",
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "sideWidth": null,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "nullPointMode": "null",
+          "options": {
+            "dataLinks": []
+          },
+          "percentage": false,
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "DCGM_FI_DEV_SM_CLOCK{instance=~\"$instance\", gpu=~\"$gpu\"} * 1000000",
+              "format": "time_series",
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "GPU {{gpu}}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "GPU SM Clocks",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": null,
+              "format": "hertz",
+              "label": "",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$datasource",
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 24
+          },
+          "hiddenSeries": false,
+          "id": 6,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "nullPointMode": "null",
+          "options": {
+            "dataLinks": []
+          },
+          "percentage": false,
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "DCGM_FI_DEV_GPU_UTIL{instance=~\"$instance\", gpu=~\"$gpu\"}",
+              "interval": "",
+              "legendFormat": "GPU {{gpu}}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "GPU Utilization",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "percent",
+              "label": null,
+              "logBase": 1,
+              "max": "100",
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$datasource",
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 32
+          },
+          "hiddenSeries": false,
+          "id": 18,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "nullPointMode": "null",
+          "options": {
+            "dataLinks": []
+          },
+          "percentage": false,
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "DCGM_FI_DEV_FB_USED{instance=~\"$instance\", gpu=~\"$gpu\"}",
+              "interval": "",
+              "legendFormat": "GPU {{gpu}}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "GPU Framebuffer Mem Used",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "decmbytes",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$datasource",
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 24
+          },
+          "hiddenSeries": false,
+          "id": 4,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "nullPointMode": "null",
+          "options": {
+            "dataLinks": []
+          },
+          "percentage": false,
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "DCGM_FI_PROF_PIPE_TENSOR_ACTIVE{instance=~\"$instance\", gpu=~\"$gpu\"}",
+              "interval": "",
+              "legendFormat": "GPU {{gpu}}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Tensor Core Utilization",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "percentunit",
+              "label": null,
+              "logBase": 1,
+              "max": "1",
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
+      "refresh": false,
+      "schemaVersion": 22,
+      "style": "dark",
+      "tags": [],
+      "templating": {
+        "list": [
+          {
+            "current": {
+              "selected": true,
+              "text": "Prometheus",
+              "value": "Prometheus"
+            },
+            "hide": 0,
+            "includeAll": false,
+            "multi": false,
+            "name": "datasource",
+            "options": [],
+            "query": "prometheus",
+            "queryValue": "",
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "type": "datasource"
+          },
+          {
+            "allValue": null,
+            "current": {},
+            "datasource": "$datasource",
+            "definition": "label_values(DCGM_FI_DEV_GPU_TEMP, instance)",
+            "hide": 0,
+            "includeAll": true,
+            "index": -1,
+            "label": null,
+            "multi": true,
+            "name": "instance",
+            "options": [],
+            "query": "label_values(DCGM_FI_DEV_GPU_TEMP, instance)",
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "tagValuesQuery": "",
+            "tags": [],
+            "tagsQuery": "",
+            "type": "query",
+            "useTags": false
+          },
+          {
+            "allValue": null,
+            "current": {},
+            "datasource": "$datasource",
+            "definition": "label_values(DCGM_FI_DEV_GPU_TEMP, gpu)",
+            "hide": 0,
+            "includeAll": true,
+            "index": -1,
+            "label": null,
+            "multi": true,
+            "name": "gpu",
+            "options": [],
+            "query": "label_values(DCGM_FI_DEV_GPU_TEMP, gpu)",
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "tagValuesQuery": "",
+            "tags": [],
+            "tagsQuery": "",
+            "type": "query",
+            "useTags": false
+          }
+        ]
+      },
+      "time": {
+        "from": "now-15m",
+        "to": "now"
+      },
+      "timepicker": {
+        "refresh_intervals": [
+          "5s",
+          "10s",
+          "30s",
+          "1m",
+          "5m",
+          "15m",
+          "30m",
+          "1h",
+          "2h",
+          "1d"
+        ]
+      },
+      "timezone": "",
+      "title": "NVIDIA DCGM Exporter Dashboard",
+      "uid": "Oxed_c6Wz",
+      "variables": {
+        "list": []
+      },
+      "version": 1
+    }
+kind: ConfigMap
+metadata:
+  labels:
+    console.openshift.io/dashboard: "true"
+    console.openshift.io/odc-dashboard: "true"
+  name: nvidia-dcgm-exporter-dashboard
+  namespace: openshift-config-managed
+---
+apiVersion: v1
+data:
+  job.sh: |
+    #!/bin/bash
+    # shellcheck disable=SC1091
+
+    . /scripts/ocp.sh
+
+    ocp_machineset_create_autoscale "${MACHINE_MIN}" "${MACHINE_MAX}"
+  ocp.sh: "#!/bin/bash\n\n# https://mirror.openshift.com/pub/openshift-v4\n\nocp_add_admin_user(){\n
+    \ HT_USERNAME=${1:-admin}\n  HT_PASSWORD=${2:-$(genpass)}\n\n  htpasswd_ocp_get_file\n
+    \ htpasswd_add_user \"${HT_USERNAME}\" \"${HT_PASSWORD}\"\n  htpasswd_ocp_set_file\n
+    \ htpasswd_validate_user \"${HT_USERNAME}\" \"${HT_PASSWORD}\"\n}\n\nocp_auth_add_to_group(){\n
+    \ USER=${1:-admin}\n  OCP_GROUP=${2:-${DEFAULT_OCP_GROUP}}\n\n  ocp_auth_create_group
+    \"${OCP_GROUP}\"\n\n  oc adm groups add-users \\\n  \"${OCP_GROUP}\" \"${USER}\"\n}\n\nocp_auth_create_group(){\n
+    \ OCP_GROUP=${1:-${DEFAULT_OCP_GROUP}}\n\n  oc get group \"${OCP_GROUP}\" > /dev/null
+    2>&1 && return\n\necho \"\napiVersion: user.openshift.io/v1\nkind: Group\nmetadata:\n
+    \ name: ${OCP_GROUP}\n\" | oc apply -f-\n\n}\n\nocp_auth_setup_user(){\n  USER=${1:-admin}\n
+    \ PASS=${2:-$(genpass)}\n  OCP_GROUP=${3:-${DEFAULT_OCP_GROUP}}\n\n  htpasswd_add_user
+    \"${USER}\" \"${PASS}\"\n  ocp_auth_add_to_group \"${USER}\" \"${OCP_GROUP}\"\n\n
+    \ echo \"\n    run: htpasswd_ocp_set_file\n  \"\n}\n\nocp_check_info(){\n  echo
+    \"== OCP INFO ==\"\n  ocp_check_login || return 1\n\n  echo \"NAMESPACE: $(oc
+    project -q)\"\n  sleep \"${SLEEP_SECONDS:-8}\"\n}\n\nocp_check_login(){\n  oc
+    whoami || return 1\n  oc cluster-info | head -n1\n  echo\n}\n\nocp_clean_install_pods(){\n
+    \ oc delete pod \\\n    -A \\\n    -l app=installer\n}\n\nocp_control_nodes_not_schedulable(){\n
+    \ oc patch schedulers.config.openshift.io/cluster --type merge --patch '{\"spec\":{\"mastersSchedulable\":
+    false}}'\n}\n\nocp_control_nodes_schedulable(){\n  oc patch schedulers.config.openshift.io/cluster
+    --type merge --patch '{\"spec\":{\"mastersSchedulable\": true}}'\n}\n\nocp_expose_image_registry(){\n
+    \ oc patch configs.imageregistry.operator.openshift.io/cluster --type=merge --patch
+    '{\"spec\":{\"defaultRoute\":true}}'\n\n  # remove 'default-route-openshift-image-'
+    from route\n  HOST=$(oc get route default-route -n openshift-image-registry --template='{{
+    .spec.host }}')\n  SHORTER_HOST=$(echo \"${HOST}\" | sed '/host/ s/default-route-openshift-image-//')\n
+    \ oc patch configs.imageregistry.operator.openshift.io/cluster --type=merge --patch
+    '{\"spec\":{\"host\": \"'\"${SHORTER_HOST}\"'\"}}'\n\n  echo \"OCP image registry
+    is available at: ${SHORTER_HOST}\"\n}\n\nocp_fix_duplicate_operator_groups(){\n
+    \ for ns in $(oc get og -A | awk '{print $1}' | uniq -d)\n  do\n    oc -n \"${ns}\"
+    \\\n      get og -o name | \\\n        tail -n+2 | \\\n        xargs oc -n \"${ns}\"
+    delete\n    \n    # oc -n \"${ns}\" \\\n    #   delete pod --all\n  done\n}\n\nocp_get_apps_domain(){\n
+    \ oc get ingresses.config.openshift.io cluster -o jsonpath='{.spec.domain}'\n}\n\nocp_get_domain(){\n
+    \ OCP_APPS_DOMAIN=$(ocp_get_apps_domain)\n  echo \"${OCP_APPS_DOMAIN#apps.}\"\n}\n\nocp_get_kubeconfigs(){\n
+    \ # https://rcarrata.com/openshift/regenerate-kubeconfig/\n  # https://gist.githubusercontent.com/rcarrata/016da295c1421cccbfbd66ed9a7922bc/raw/855486c363734892988cdf1b5d0d26ece5e0960a/regenerate-kubeconfig.sh\n
+    \ # https://access.redhat.com/solutions/6054981\n  # https://access.redhat.com/solutions/5286371\n
+    \ # https://access.redhat.com/solutions/6112601\n\n  oc -n openshift-kube-apiserver
+    extract secret/node-kubeconfigs\n}\n\nocp_get_pull_secret(){\n  oc -n openshift-config
+    \\\n    get secret/pull-secret \\\n    --template='{{index .data \".dockerconfigjson\"
+    | base64decode}}'\n}\n\nocp_gpu_pretty_label(){\n  oc label node -l nvidia.com/gpu.machine
+    node-role.kubernetes.io/gpu=''\n}\n\nocp_gpu_taint_nodes(){\n  oc adm taint node
+    -l node-role.kubernetes.io/gpu nvidia.com/gpu=:NoSchedule --overwrite\n  oc adm
+    drain -l node-role.kubernetes.io/gpu --ignore-daemonsets --delete-emptydir-data\n
+    \ oc adm uncordon -l node-role.kubernetes.io/gpu\n}\n\nocp_gpu_untaint_nodes(){\n
+    \ oc adm taint node -l node-role.kubernetes.io/gpu nvidia.com/gpu=:NoSchedule-\n}\n\nocp_infra_label_control(){\n
+    \ echo \"see https://docs.redhat.com/en/documentation/openshift_container_platform/4.8/html/machine_management/creating-infrastructure-machinesets#moving-resources-to-infrastructure-machinesets\"\n\n
+    \ oc label node -l node-role.kubernetes.io/control-plane node-role.kubernetes.io/infra=\"\"\n\n
+    \ # oc patch \\\n  #   scheduler cluster \\\n  #   --type=merge --patch '{\"spec\":{\"defaultNodeSelector\":\"node-role.kubernetes.io/infra=\\\"\\\"\"}}'\n\n}\n\nocp_infra_move_registry_to_control(){\n\ncat
+    <<YAML > /tmp/patch.yaml\nspec:\n  nodeSelector:\n    node-role.kubernetes.io/infra:
+    \"\"\n  tolerations:\n  - effect: NoSchedule\n    key: node-role.kubernetes.io/master\n
+    \   operator: Exists\n  - effect: NoExecute\n    key: node-role.kubernetes.io/master\n
+    \   operator: Exists\nYAML\n\n oc patch \\\n    configs.imageregistry.operator.openshift.io/cluster
+    \\\n    --type=merge --patch-file /tmp/patch.yaml\n\n}\n\nocp_infra_move_router_to_control(){\n\ncat
+    <<YAML > /tmp/patch.yaml\nspec:\n  nodePlacement:\n    nodeSelector:\n      matchLabels:\n
+    \       node-role.kubernetes.io/infra: \"\"\n    tolerations:\n    - effect: NoSchedule\n
+    \     key: node-role.kubernetes.io/master\n      operator: Exists\n    - effect:
+    NoExecute\n      key: node-role.kubernetes.io/master\n      operator: Exists\nYAML\n\n
+    \ oc -n openshift-ingress-operator \\\n    patch \\\n    ingresscontroller default
+    \\\n    --type=merge --patch-file /tmp/patch.yaml\n\n}\n\nocp_infra_move_monitoring_to_control(){\n\ncat
+    <<YAML > /tmp/patch.yaml\nspec:\n  logStore:\n    elasticsearch:\n      nodeCount:
+    3\n      nodeSelector:\n        node-role.kubernetes.io/infra: \"\"\n      tolerations:\n
+    \     - effect: NoSchedule\n        key: node-role.kubernetes.io/master\n        operator:
+    Exists\n      - effect: NoExecute\n        key: node-role.kubernetes.io/master\n
+    \       operator: Exists\n  visualization:\n    kibana:\n      nodeSelector:\n
+    \       node-role.kubernetes.io/infra: \"\"\n      tolerations:\n      - effect:
+    NoSchedule\n        key: node-role.kubernetes.io/master\n        operator: Exists\n
+    \     - effect: NoExecute\n        key: node-role.kubernetes.io/master\n        operator:
+    Exists\nYAML\n\n  oc -n openshift-logging \\\n    patch \\\n    clusterlogging
+    instance \\\n    --type=merge --patch-file /tmp/patch.yaml\n\n}\n\nocp_kubeadmin_create(){\n
+    \ PASS=${1:-$(genpass 5 )-$(genpass 5 )-$(genpass 5 )-$(genpass 5 )}\n\n  which
+    htpasswd >/dev/null || return 1\n\n  HTPASSWD=$(htpasswd -nbB -C10 null \"${PASS}\")\n
+    \ HASH=${HTPASSWD##*:}\n\n  echo \"\n  PASSWORD: ${PASS}\n  HASH:     ${HASH}\n\n
+    \ oc apply -f scratch/kubeadmin.yaml\n  \"\n\ncat << YAML > scratch/kubeadmin.yaml\nkind:
+    Secret\napiVersion: v1\nmetadata:\n  name: kubeadmin\n  namespace: kube-system\nstringData:\n
+    \ kubeadmin: ${HASH}\n  password: ${PASS}\ntype: Opaque\nYAML\n}\n\nocp_kubeadmin_remove(){\n
+    \ FORCE=${1:-No}\n\n  if [ \"${FORCE}\" = \"YES\" ]; then\n    [ ! -e scratch/kubeadmin.yaml
+    ] && \\\n      oc get secret kubeadmin -n kube-system -o yaml > scratch/kubeadmin.yaml
+    || return 1\n    oc delete secret kubeadmin -n kube-system\n  else\n    echo -e
+    \"${RED}\n    WARNING: you must run - ocp_remove_kubeadmin YES\n\n    WARNING:
+    you will lose access to your cluster if you do not\n      have a way to login
+    to your cluster without kubeadmin. \n      \n      Examples:\n        - An identity
+    provider with a cluster-admin user setup\n        - A kubeconfig file\n    ${NC}\"\n
+    \   return\n  fi\n}\n\nocp_machineset_create_autoscale(){\n  MACHINE_MIN=${1:-0}\n
+    \ MACHINE_MAX=${2:-4}\n  MACHINE_SETS=${3:-$(oc -n openshift-machine-api get machinesets.machine.openshift.io
+    -o name | sed 's@.*/@@' )}\n\n  for machine_set in ${MACHINE_SETS}\n  do\ncat
+    << YAML | oc apply -f -\napiVersion: \"autoscaling.openshift.io/v1beta1\"\nkind:
+    \"MachineAutoscaler\"\nmetadata:\n  name: \"${machine_set}\"\n  namespace: \"openshift-machine-api\"\nspec:\n
+    \ minReplicas: ${MACHINE_MIN}\n  maxReplicas: ${MACHINE_MAX}\n  scaleTargetRef:\n
+    \   apiVersion: machine.openshift.io/v1beta1\n    kind: MachineSet\n    name:
+    \"${machine_set}\"\nYAML\n  done\n}\n\nocp_machineset_patch_accelerator(){\n  MACHINE_SET_NAME=${1:-gpu}\n
+    \ LABEL=${2:-nvidia-gpu}\n\n  oc -n openshift-machine-api \\\n    patch machineset
+    \"${MACHINE_SET_NAME}\" \\\n    --type=merge --patch '{\"spec\":{\"template\":{\"spec\":{\"metadata\":{\"labels\":{\"cluster-api/accelerator\":\"'\"${LABEL}\"'\"}}}}}}'\n
+    \ \n  oc -n openshift-machine-api \\\n    patch machineset \"${MACHINE_SET_NAME}\"
+    \\\n    --type=merge --patch '{\"spec\":{\"template\":{\"spec\":{\"metadata\":{\"labels\":{\"node-role.kubernetes.io/gpu\":\"\"}}}}}}'\n}\n\nocp_machineset_scale(){\n
+    \ REPLICAS=${1:-1}\n  MACHINE_SETS=${2:-$(oc -n openshift-machine-api get machineset
+    -o name)}\n\n  # scale workers\n  echo \"${MACHINE_SETS}\" | \\\n    xargs \\\n
+    \     oc -n openshift-machine-api \\\n      scale --replicas=\"${REPLICAS}\"\n}\n\nocp_machineset_taint_gpu(){\n
+    \ SHORT_NAME=${1:-g4dn}\n  MACHINE_SET=$(oc -n openshift-machine-api get machinesets.machine.openshift.io
+    -o name | grep \"${SHORT_NAME}\" | head -n1)\n\n  echo \"Patching: ${MACHINE_SET}\"\n\n
+    \ # taint nodes for gpu-only workloads\n  oc -n openshift-machine-api \\\n    patch
+    \"${MACHINE_SET}\" \\\n    --type=merge --patch '{\"spec\":{\"template\":{\"spec\":{\"taints\":[{\"key\":\"nvidia.com/gpu\",\"value\":\"\",\"effect\":\"NoSchedule\"}]}}}}'\n}\n\nocp_release_info(){\n
+    \ VERSION=${1:-stable-4.12}\n  echo \"VERSION: ${VERSION}\"\n  curl -sL \"https://mirror.openshift.com/pub/openshift-v4/amd64/clients/ocp/${VERSION}/release.txt\"\n}\n\nocp_run_on_all_nodes(){\n
+    \ case $1 in\n    --confirm)\n      shift\n\n      COMMAND=${*:-uptime}\n      ALL_NODES=$(oc
+    get nodes --show-kind --no-headers|awk '/node/{print $1}')\n\n      for node in
+    ${ALL_NODES}\n        do\n          # wipefs -af /dev/nvme0n1\n          # oc
+    debug $node -- chroot /host  bash -c \"$(cat -)\"\n          # shellcheck disable=SC2086\n
+    \         oc debug \"$node\" -- chroot /host ${COMMAND}\n      done\n      ;;\n
+    \  *)\n      echo \"-------------------------------------------------------------------\"\n
+    \     echo \"WARNING. This runs as root on all nodes!\"\n      echo \"You can
+    DESTROY ALL DATA, without recovery, if used incorrectly!\"\n      echo \"-------------------------------------------------------------------\"\n
+    \     echo \"Usage:\"\n      echo \"  ocp_run_on_all_nodes --confirm < command
+    >\"\n  esac\n\n}\n\nocp_save_money(){\n\n  # run work on masters\n  ocp_control_nodes_schedulable\n\n
+    \ # scale to zero\n  ocp_machineset_scale 0\n\n  # place as many pods on as few
+    nodes as possible\n  ocp_scheduler_set_profile HighNodeUtilization\n}\n\nocp_scheduler_set_profile(){\n
+    \ SCHED_PROFILE=${1:-LowNodeUtilization}\n\n  # LowNodeUtilization, HighNodeUtilization,
+    NoScoring\n  echo \"see https://docs.openshift.com/container-platform/4.16/nodes/scheduling/nodes-scheduler-profiles.html\"\n
+    \ echo \"OPTIONS: LowNodeUtilization (default), HighNodeUtilization, NoScoring\"\n
+    \ echo \"SCHED_PROFILE: ${SCHED_PROFILE}\"\n\n  oc patch schedulers.config.openshift.io/cluster
+    --type merge --patch '{\"spec\":{\"profile\": \"'\"${SCHED_PROFILE}\"'\"}}'\n}\n\nocp_setup_namespace(){\n
+    \ NAMESPACE=${1}\n\n  oc new-project \"${NAMESPACE}\" 2>/dev/null || \\\n    oc
+    project \"${NAMESPACE}\"\n}\n\nocp_update_pull_secret(){\n  echo \"see https://access.redhat.com/solutions/4902871\"\n\n
+    \ PULL_SECRET_FILE=${1:-${GIT_ROOT}/scratch/pull-secret}\n\n  oc extract secret/pull-secret
+    \\\n    -n openshift-config \\\n    --keys .dockerconfigjson \\\n    --to=- >
+    \"${PULL_SECRET_FILE}\"\n  \n  oc get secret/pull-secret \\\n    -n openshift-config
+    \\\n    -o yaml > \"${PULL_SECRET_FILE}.yaml\"\n\n  [ -e \"${PULL_SECRET_FILE}\"
+    ] || return 0\n\n  if oc get secret/pull-secret -n openshift-config -o name; then\n
+    \   oc set data secret/pull-secret \\\n      -n openshift-config \\\n      --from-file=.dockerconfigjson=\"${PULL_SECRET_FILE}\"\n
+    \ else\n    oc create secret generic pull-secret \\\n      -n openshift-config
+    \\\n      --type=kubernetes.io/dockerconfigjson \\\n      --from-file=.dockerconfigjson=\"${PULL_SECRET_FILE}\"\n
+    \ fi  \n}\n\nocp_upgrade_ack_4.13(){\n  oc -n openshift-config patch cm admin-acks
+    --patch '{\"data\":{\"ack-4.12-kube-1.26-api-removals-in-4.13\":\"true\"}}' --type=merge\n}\n\nocp_upgrade_ack_4.19(){\n
+    \ oc -n openshift-config patch cm admin-acks --patch '{\"data\":{\"ack-4.18-kube-1.32-api-removals-in-4.19\":\"true\"}}'
+    --type=merge\n}\n\nocp_upgrade_cluster(){\n  OCP_VERSION=\"${1:-latest}\"\n\n
+    \ if [ \"${OCP_VERSION}\" = \"latest\" ]; then\n    oc adm upgrade --to-latest=true\n
+    \ else\n    oc adm upgrade --to=\"${OCP_VERSION}\"\n  fi\n}\n"
+kind: ConfigMap
+metadata:
+  labels:
+    autoscale: config
+  name: job-setup-autoscale
+  namespace: openshift-machine-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.alpha.openshift.io/serving-cert-secret-name: plugin-serving-cert
+  labels:
+    app.kubernetes.io/component: console-plugin-nvidia-gpu
+    app.kubernetes.io/instance: console-plugin-nvidia-gpu
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: console-plugin-nvidia-gpu
+    app.kubernetes.io/part-of: console-plugin-nvidia-gpu
+    app.kubernetes.io/version: latest
+    helm.sh/chart: console-plugin-nvidia-gpu-0.2.4
+  name: console-plugin-nvidia-gpu
+  namespace: nvidia-gpu-operator
+spec:
+  ports:
+  - name: 9443-tcp
+    port: 9443
+    protocol: TCP
+    targetPort: 9443
+  selector:
+    app.kubernetes.io/name: console-plugin-nvidia-gpu
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: console-plugin-nvidia-gpu
+    app.kubernetes.io/instance: console-plugin-nvidia-gpu
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: console-plugin-nvidia-gpu
+    app.kubernetes.io/part-of: console-plugin-nvidia-gpu
+    app.kubernetes.io/version: latest
+    app.openshift.io/runtime-namespace: console-plugin-nvidia-gpu
+    helm.sh/chart: console-plugin-nvidia-gpu-0.2.4
+  name: console-plugin-nvidia-gpu
+  namespace: nvidia-gpu-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: console-plugin-nvidia-gpu
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: console-plugin-nvidia-gpu
+    spec:
+      containers:
+      - image: quay.io/edge-infrastructure/console-plugin-nvidia-gpu:latest
+        imagePullPolicy: Always
+        name: console-plugin-nvidia-gpu
+        ports:
+        - containerPort: 9443
+          protocol: TCP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        - mountPath: /var/serving-cert
+          name: plugin-serving-cert
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      securityContext:
+        runAsNonRoot: true
+      volumes:
+      - name: plugin-serving-cert
+        secret:
+          defaultMode: 420
+          secretName: plugin-serving-cert
+      - configMap:
+          defaultMode: 420
+          name: nginx-conf
+        name: nginx-conf
+---
+apiVersion: autoscaling.openshift.io/v1
+kind: ClusterAutoscaler
+metadata:
+  labels:
+    autoscale: config
+  name: default
+  namespace: openshift-machine-api
+spec:
+  podPriorityThreshold: -10
+  resourceLimits:
+    cores:
+      max: 176
+      min: 0
+    gpus:
+    - max: 8
+      min: 0
+      type: nvidia.com/gpu
+    - max: 1
+      min: 0
+      type: amd.com/gpu
+    maxNodesTotal: 16
+    memory:
+      max: 512
+      min: 0
+  scaleDown:
+    delayAfterAdd: 5m
+    delayAfterDelete: 1m
+    delayAfterFailure: 30s
+    enabled: true
+    unneededTime: 5m
+    utilizationThreshold: "0.7"
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: job-aro-gpu-machineset-
+  name: job-aro-gpu-machineset
+  namespace: nvidia-gpu-operator
+spec:
+  template:
+    spec:
+      containers:
+      - command:
+        - /bin/bash
+        - -c
+        - /scripts/job.sh
+        env:
+        - name: INSTANCE_TYPE
+          value: Standard_NC4as_T4_v3
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: registry.redhat.io/openshift4/ose-cli
+        name: job-aro-gpu-machineset
+        volumeMounts:
+        - mountPath: /scripts
+          name: scripts
+      restartPolicy: Never
+      serviceAccount: job-aro-gpu-machineset
+      serviceAccountName: job-aro-gpu-machineset
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 493
+          name: job-aro-gpu-machineset
+        name: scripts
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: job-aws-gpu-machineset-
+  name: job-aws-gpu-machineset
+  namespace: nvidia-gpu-operator
+spec:
+  template:
+    spec:
+      containers:
+      - command:
+        - /bin/bash
+        - -c
+        - /scripts/job.sh
+        env:
+        - name: INSTANCE_TYPE
+          value: g6.2xlarge
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: registry.redhat.io/openshift4/ose-cli
+        name: job-aws-gpu-machineset
+        volumeMounts:
+        - mountPath: /scripts
+          name: scripts
+      restartPolicy: Never
+      serviceAccount: job-aws-gpu-machineset
+      serviceAccountName: job-aws-gpu-machineset
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 493
+          name: job-aws-gpu-machineset
+        name: scripts
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+  generateName: job-gpu-console-plugin-
+  name: job-gpu-console-plugin
+  namespace: nvidia-gpu-operator
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      containers:
+      - command:
+        - /bin/bash
+        - -c
+        - /scripts/console-plugin-job.sh
+        env:
+        - name: PLUGIN_NAME
+          value: console-plugin-nvidia-gpu
+        image: registry.redhat.io/openshift4/ose-cli
+        name: minion
+        volumeMounts:
+        - mountPath: /scripts
+          name: scripts
+      restartPolicy: Never
+      serviceAccount: job-gpu-console-plugin
+      serviceAccountName: job-gpu-console-plugin
+      volumes:
+      - configMap:
+          defaultMode: 493
+          name: job-gpu-console-plugin
+        name: scripts
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    argocd.argoproj.io/hook: Sync
+  labels:
+    autoscale: config
+  name: job-setup-autoscale
+  namespace: openshift-machine-api
+spec:
+  template:
+    spec:
+      containers:
+      - command:
+        - /bin/bash
+        - -c
+        - /scripts/job.sh
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MACHINE_MIN
+          value: "0"
+        - name: MACHINE_MAX
+          value: "4"
+        image: registry.redhat.io/openshift4/ose-cli
+        name: minion
+        volumeMounts:
+        - mountPath: /scripts
+          name: scripts
+      restartPolicy: Never
+      serviceAccount: job-setup-autoscale
+      serviceAccountName: job-setup-autoscale
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 493
+          name: job-setup-autoscale
+        name: scripts
+---
+apiVersion: console.openshift.io/v1
+kind: ConsoleLink
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=true
+    source: https://github.com/redhat-na-ssa/demo-ai-gitops-catalog.git
+  labels:
+    demo: ai-gitops-catalog
+  name: github-demo-gitops
+spec:
+  applicationMenu:
+    imageURL: /static/assets/public/imgs/logos/github.svg
+    section: Git Repos
+  href: https://github.com/redhat-na-ssa/demo-ai-gitops-catalog
+  location: ApplicationMenu
+  text: GitHub - Demo GitOps Catalog
+---
+apiVersion: console.openshift.io/v1
+kind: ConsoleLink
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=true
+    source: https://github.com/redhat-na-ssa/demo-ai-gitops-catalog.git
+  labels:
+    demo: ai-gitops-catalog
+  name: github-ssa
+spec:
+  applicationMenu:
+    imageURL: /static/assets/public/imgs/logos/github.svg
+    section: Git Repos
+  href: https://github.com/redhat-na-ssa
+  location: ApplicationMenu
+  text: GitHub - NA SSA
+---
+apiVersion: console.openshift.io/v1
+kind: ConsoleLink
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=true
+    source: https://github.com/redhat-na-ssa/demo-ai-gitops-catalog.git
+  labels:
+    demo: ai-gitops-catalog
+  name: help-link
+spec:
+  href: https://github.com/redhat-na-ssa/demo-ai-gitops-catalog/issues
+  location: HelpMenu
+  text: Demo Catalog - Open Issue
+---
+apiVersion: console.openshift.io/v1
+kind: ConsoleNotification
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=true
+    source: https://github.com/redhat-na-ssa/demo-ai-gitops-catalog.git
+  labels:
+    demo: ai-gitops-catalog
+  name: banner-cluster
+spec:
+  backgroundColor: '#0066FF'
+  color: '#FFF'
+  location: BannerBottom
+  text: This cluster was configured via the AI GitOps catalog
+---
+apiVersion: console.openshift.io/v1
+kind: ConsoleNotification
+metadata:
+  annotations:
+    source: https://github.com/redhat-na-ssa/demo-ai-gitops-catalog.git
+  labels:
+    demo: ai-gitops-catalog
+  name: banner-demo
+spec:
+  backgroundColor: '#9F0000'
+  color: '#FFF'
+  location: BannerTop
+  text: 'DEMO: Efficiently leveraging GPUs via autoscaling'
+---
+apiVersion: console.openshift.io/v1
+kind: ConsolePlugin
+metadata:
+  labels:
+    app.kubernetes.io/component: console-plugin-nvidia-gpu
+    app.kubernetes.io/instance: console-plugin-nvidia-gpu
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: console-plugin-nvidia-gpu
+    app.kubernetes.io/part-of: console-plugin-nvidia-gpu
+    app.kubernetes.io/version: latest
+    helm.sh/chart: console-plugin-nvidia-gpu-0.2.4
+  name: console-plugin-nvidia-gpu
+  namespace: nvidia-gpu-operator
+spec:
+  backend:
+    service:
+      basePath: /
+      name: console-plugin-nvidia-gpu
+      namespace: nvidia-gpu-operator
+      port: 9443
+    type: Service
+  displayName: Console Plugin NVIDIA GPU Template
+---
+apiVersion: monitoring.openshift.io/v1
+kind: AlertingRule
+metadata:
+  name: gpu-pods
+  namespace: openshift-monitoring
+spec:
+  groups:
+  - name: gpu-pods
+    rules:
+    - alert: GpuPods
+      annotations:
+        description: A total of {{ $value }} 'nvidia.com/gpu' requested on the cluster.
+        runbook_url: https://github.com/redhat-na-ssa/demo-ai-gitops-catalog/tree/main/components/operators/gpu-operator-certified/instance/components/gpu-monitoring/gpu-pods.md
+        summary: Cloud costs may increase by requesting specialized resources.
+      expr: |
+        sum (kube_pod_resource_request{resource="nvidia.com/gpu"} >= 1 ) > 0
+        # sum by (namespace, pod,resource) (kube_pod_resource_request{resource="nvidia.com/gpu"} >= 1) > 0
+      labels:
+        severity: info
+---
+apiVersion: nfd.openshift.io/v1
+kind: NodeFeatureDiscovery
+metadata:
+  name: nfd-instance
+  namespace: openshift-nfd
+spec:
+  instance: ""
+  operand:
+    image: registry.redhat.io/openshift4/ose-node-feature-discovery-rhel9:v4.16
+    servicePort: 12000
+  topologyUpdater: false
+  workerConfig:
+    configData: |
+      core:
+        sleepInterval: 60s
+      sources:
+        pci:
+          deviceClassWhitelist:
+            - "0200"
+            - "03"
+            - "12"
+          deviceLabelFields:
+            - "vendor"
+---
+apiVersion: nvidia.com/v1
+kind: ClusterPolicy
+metadata:
+  name: gpu-cluster-policy
+  namespace: nvidia-gpu-operator
+spec:
+  daemonsets:
+    rollingUpdate:
+      maxUnavailable: "1"
+    tolerations:
+    - effect: NoSchedule
+      key: nvidia.com/gpu
+      operator: Exists
+    updateStrategy: RollingUpdate
+  dcgm:
+    enabled: true
+  dcgmExporter:
+    config:
+      name: console-plugin-nvidia-gpu
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  devicePlugin:
+    config:
+      default: time-sliced-4
+      name: device-plugin-config
+    enabled: true
+  driver:
+    certConfig:
+      name: ""
+    enabled: true
+    kernelModuleConfig:
+      name: ""
+    licensingConfig:
+      configMapName: ""
+      nlsEnabled: false
+    repoConfig:
+      configMapName: ""
+    upgradePolicy:
+      autoUpgrade: true
+      drain:
+        deleteEmptyDir: false
+        enable: false
+        force: false
+        timeoutSeconds: 300
+      maxParallelUpgrades: 1
+      maxUnavailable: 25%
+      podDeletion:
+        deleteEmptyDir: false
+        force: false
+        timeoutSeconds: 300
+      waitForCompletion:
+        timeoutSeconds: 0
+    virtualTopology:
+      config: ""
+  gds:
+    enabled: false
+  gfd:
+    enabled: true
+  mig:
+    strategy: single
+  migManager:
+    enabled: true
+  nodeStatusExporter:
+    enabled: true
+  operator:
+    defaultRuntime: crio
+    initContainer: {}
+    use_ocp_driver_toolkit: true
+  sandboxDevicePlugin:
+    enabled: true
+  sandboxWorkloads:
+    defaultWorkload: container
+    enabled: false
+  toolkit:
+    enabled: true
+  validator:
+    plugin:
+      env:
+      - name: WITH_WORKLOAD
+        value: "true"
+  vfioManager:
+    enabled: true
+  vgpuDeviceManager:
+    enabled: true
+  vgpuManager:
+    enabled: false
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: gpu-operator-certified
+  namespace: nvidia-gpu-operator
+spec:
+  targetNamespaces:
+  - nvidia-gpu-operator
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: nfd
+  namespace: openshift-nfd
+spec:
+  targetNamespaces:
+  - openshift-nfd
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: gpu-operator-certified
+  namespace: nvidia-gpu-operator
+spec:
+  channel: stable
+  installPlanApproval: Automatic
+  name: gpu-operator-certified
+  source: certified-operators
+  sourceNamespace: openshift-marketplace
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: nfd
+  namespace: openshift-nfd
+spec:
+  channel: stable
+  installPlanApproval: Automatic
+  name: nfd
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
