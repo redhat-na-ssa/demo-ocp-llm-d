@@ -25,6 +25,16 @@ NOTE: The node sizes below are the **recommended minimum** to select for provisi
 - <a href="https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte.ocp-wksp.prod&utm_source=webapp&utm_medium=share-link" target="_blank">Red Hat OpenShift Container Platform Cluster (AWS)</a>
   - 1 x Control Plane
 
+### Setup OpenShift Web Terminal (Optional)
+
+```sh
+# apply the enhanced web terminal
+oc apply -k https://github.com/redhat-na-ssa/llm-d-demo/demo/web-terminal
+
+# delete old web terminal
+$(wtoctl | grep 'oc delete')
+```
+
 ### OpenShift 4.18
 
 See [ocp-4.18](gitops/ocp-4.18) for installation of `llm-d` dependencies
