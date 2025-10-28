@@ -20,7 +20,7 @@ until oc apply -k gitops/ocp-4.18; do : ; done
 
 > NOTE: the Gateway API dependencies are vendored as part of OpenShift 4.19+
 
-### Configure RHOAI Cluster for `llmd`
+### Configure RHOAI Cluster for `llm-d`
 
 Disable Knative Serving in RHOAI. 
 
@@ -51,8 +51,13 @@ openshift-ingress   openshift-ai-inference   istio   a5b04a5e001d74035aa36adde93
 
 - Send an HTTP request with the OpenAI API:
 
-```
-curl -X POST http://a5b04a5e001d74035aa36adde93e98f5-1797832142.us-east-2.elb.amazonaws.com/llm-test/qwen/v1/completions \
+```sh
+export INFERENCE_URL=$(
+  oc -n openshift-ingress get gateway openshift-ai-inference \
+    -o jsonpath='{.status.addresses[0].value}'
+)
+
+curl -X POST http://${INFERENCE_URL}/llm-test/qwen/v1/completions \
   -H "Content-Type: application/json" \
   -d '{ "model": "Qwen/Qwen3-0.6B", "prompt": "Explain the difference between supervised and unsupervised learning in machine learning. Include examples of algorithms used in each type.", "max_tokens": 200, "temperature": 0.7, "top_p": 0.9 }'
 ```
