@@ -21,7 +21,7 @@ spec:
 
             echo "
             GIT_REPO=https://github.com/redhat-na-ssa/llm-d-demo.git
-            GIT_PATH=demo
+            GIT_PATH=demo-llm-d
 
             [ -e ~/\${GIT_PATH} ] || git clone \${GIT_REPO} ~/\${GIT_PATH}
             [ -e ~/\${GIT_PATH} ] && cd ~/\${GIT_PATH}
