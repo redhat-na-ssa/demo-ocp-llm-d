@@ -1,6 +1,6 @@
 # `llm-d` Deployment Guide
 
-This guide provides a demonstration of how to get up and running with `llm-d` on RHOAI 2.25 and OCP 4.18 based on:
+This guide shows how to get up and running with `llm-d` on RHOAI 2.25 and OCP 4.18 based on:
 - https://access.redhat.com/articles/7131048
 - https://github.com/opendatahub-io/kserve/tree/release-v0.15/docs/samples/llmisvc/ocp-4-18-setup
 
