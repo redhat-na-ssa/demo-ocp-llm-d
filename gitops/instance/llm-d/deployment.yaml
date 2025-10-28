@@ -70,7 +70,7 @@ spec:
           #   value: "--disable-uvicorn-access-log"
         resources:
           limits:
-            cpu: '4'
+            cpu: '1'
             memory: 8Gi
             nvidia.com/gpu: "1"
           requests:
