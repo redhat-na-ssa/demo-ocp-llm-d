@@ -28,7 +28,7 @@ Disable KNative serving in RHOAI.
 until oc apply -k gitops/rhoai; do : ; done
 ```
 
->> NOTE: `llm-d` will become the default in RHOAI 3.x
+> NOTE: `llm-d` will become the default in RHOAI 3.x
 
 ## Deploy
 
