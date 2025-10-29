@@ -2077,7 +2077,7 @@ spec:
       enabled: true
   devicePlugin:
     config:
-      default: time-sliced-4
+      default: default
       name: device-plugin-config
     enabled: true
   driver:
