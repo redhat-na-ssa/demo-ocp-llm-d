@@ -3,3 +3,5 @@ kind: Kustomization
 
 resources:
   - ../../operators/rhoai
+  # service mesh 3 is installed by the rhoai operator
+  # - ../../operators/servicemeshoperator3/operator/overlays/stable

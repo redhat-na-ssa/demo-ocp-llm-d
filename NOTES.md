@@ -127,3 +127,7 @@ curl -X POST http://${INFERENCE_URL}/llm-test/qwen/v1/completions \
 ```bash
 oc delete llminferenceservice qwen -n llm-test
 ```
+
+## Issues
+
+- The namespace `opendatahub` is installed
