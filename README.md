@@ -2,9 +2,9 @@
 
 This guide provides a demonstration of how to get up and running with `llm-d` on RHOAI based on:
 
-- <a href="https://access.redhat.com/articles/7131048" target="_blank">
-- <a href="https://github.com/opendatahub-io/kserve/tree/release-v0.15/docs/samples/llmisvc/ocp-4-18-setup" target="_blank">
-- <a href="https://github.com/llm-d/llm-d/blob/main/guides/precise-prefix-cache-aware/README.md" target="_blank">
+- <a href="https://access.redhat.com/articles/7131048" target="_blank">Deploying a model by using the Distributed Inference with llm-d [Developer preview]</a>
+- <a href="https://github.com/opendatahub-io/kserve/tree/release-v0.15/docs/samples/llmisvc/ocp-4-18-setup" target="_blank">Kserve Docs - OpenDataHub</a>
+- <a href="https://github.com/llm-d/llm-d/blob/main/guides/precise-prefix-cache-aware/README.md" target="_blank">LLM-D Docs - Precise Prefix Cache Aware Routing</a>
 
 ## Prerequisites - Get a cluster
 
