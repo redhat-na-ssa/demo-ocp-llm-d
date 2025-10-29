@@ -1628,7 +1628,7 @@ spec:
         - /scripts/job.sh
         env:
         - name: INSTANCE_TYPE
-          value: g4dn.4xlarge
+          value: g6.2xlarge
         - name: NAMESPACE
           valueFrom:
             fieldRef:
@@ -1834,7 +1834,7 @@ spec:
       enabled: true
   devicePlugin:
     config:
-      default: time-sliced-4
+      default: default
       name: device-plugin-config
     enabled: true
   driver:
