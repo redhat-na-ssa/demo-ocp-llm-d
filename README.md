@@ -76,6 +76,13 @@ until oc apply -k demo/llm-d; do : ; done
 ## Send an HTTP request with the OpenAI API
 
 ```sh
+# wait for the llm inference service to be available
+oc get llminferenceservice -n demo-llm
+```
+
+Test with curl
+
+```sh
 INFERENCE_URL=$(
   oc -n openshift-ingress get gateway openshift-ai-inference \
     -o jsonpath='{.status.addresses[0].value}'
