@@ -22,7 +22,13 @@ NOTE: The node sizes below are the **recommended minimum** to select for provisi
 - <a href="https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte.ocp-wksp.prod&utm_source=webapp&utm_medium=share-link" target="_blank">Red Hat OpenShift Container Platform Cluster (AWS)</a>
   - 1 x Control Plane
 
-### Setup OpenShift Web Terminal (Optional)
+### Install the [OpenShift Web Terminal](https://docs.openshift.com/container-platform/4.12/web_console/web_terminal/installing-web-terminal.html)
+
+The following icon should appear in the top right of the OpenShift web console after you have installed the operator. Clicking this icon launches the web terminal.
+
+![Web Terminal](docs/images/web-terminal.png "Web Terminal")
+
+NOTE: Reload the page in your browser if you do not see the icon after installing the operator.
 
 ```sh
 # apply the enhanced web terminal
