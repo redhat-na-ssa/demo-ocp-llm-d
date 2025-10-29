@@ -2,13 +2,13 @@
 
 This guide provides a demonstration of how to get up and running with `llm-d` on RHOAI based on:
 
-- https://access.redhat.com/articles/7131048
-- https://github.com/opendatahub-io/kserve/tree/release-v0.15/docs/samples/llmisvc/ocp-4-18-setup
-- https://github.com/llm-d/llm-d/blob/main/guides/precise-prefix-cache-aware/README.md
+- <a href="https://access.redhat.com/articles/7131048" target="_blank">
+- <a href="https://github.com/opendatahub-io/kserve/tree/release-v0.15/docs/samples/llmisvc/ocp-4-18-setup" target="_blank">
+- <a href="https://github.com/llm-d/llm-d/blob/main/guides/precise-prefix-cache-aware/README.md" target="_blank">
 
 ## Prerequisites - Get a cluster
 
-- OpenShift - 4.18+
+- OpenShift - 4.19+
   - role: `cluster-admin`
 - OpenShift AI - 2.25+
 
@@ -35,25 +35,14 @@ $(wtoctl | grep 'oc delete')
 Setup cluster nodes
 
 ```sh
-# scale machineset to at least 1
-ocp_machineset_scale 1
-
 # setup L40 single GPU machine set
 ocp_aws_machineset_create_gpu g6.xlarge
 
-# setup nvidia autoscaling
-apply_firmly demo/nvidia-gpu-autoscale/
-```
+# scale machineset to at least 1
+ocp_machineset_scale 1
 
-### OpenShift 4.18
-
-> **⚠️ Disclaimer**: This configuration is not officially supported and is provided for experimental/development
-> purposes only.
-
-See [ocp-4.18](gitops/ocp-4.18) for installation of `llm-d` dependencies
-
-```sh
-until oc apply -k gitops/ocp-4.18; do : ; done
+# setup cluster gpu autoscaling
+apply_firmly demo/nvidia-gpu-autoscale
 ```
 
 ### OpenShift 4.19+
@@ -67,10 +56,51 @@ See [ocp-4.19](gitops/ocp-4.19) for installation of `llm-d` dependencies
 until oc apply -k gitops/ocp-4.19; do : ; done
 ```
 
+### OpenShift 4.18 (Alternative)
+
+> **⚠️ Disclaimer**: This configuration is not officially supported and is provided for experimental/development
+> purposes only.
+
+See [ocp-4.18](gitops/ocp-4.18) for installation of `llm-d` dependencies
+
+```sh
+until oc apply -k gitops/ocp-4.18; do : ; done
+```
+
 ## Quickstart
 
 ```sh
 until oc apply -k demo/llm-d; do : ; done
+```
+
+## Send an HTTP request with the OpenAI API
+
+```sh
+INFERENCE_URL=$(
+  oc -n openshift-ingress get gateway openshift-ai-inference \
+    -o jsonpath='{.status.addresses[0].value}'
+)
+
+LLM=openai/gpt-oss-20b
+LLM_SVC=${LLM##*/}
+
+PROMPT="Explain the difference between supervised and unsupervised learning in machine learning. Include examples of algorithms used in each type."
+
+llm_post_data(){
+cat <<JSON
+{
+  "model": "${LLM}",
+  "prompt": "${PROMPT}",
+  "max_tokens": 200,
+  "temperature": 0.7,
+  "top_p": 0.9
+}
+JSON
+}
+
+curl -s -X POST http://${INFERENCE_URL}/demo-llm/${LLM_SVC}/v1/completions \
+  -H "Content-Type: application/json" \
+  -d "$(llm_post_data)" | jq .choices[0].text
 ```
 
 ## Additional Info
