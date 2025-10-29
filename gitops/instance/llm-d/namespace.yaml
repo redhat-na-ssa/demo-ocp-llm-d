@@ -5,4 +5,4 @@ metadata:
     openshift.io/display-name: Demo - LLM-d
   labels:
     openshift.io/cluster-monitoring: "true"
-  name: llm-test
+  name: demo-llm

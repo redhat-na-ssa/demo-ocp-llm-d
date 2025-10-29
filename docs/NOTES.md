@@ -24,7 +24,7 @@ serviceMesh:
 
 <details>
 <summary>Click to expand</summary>
-<img src="docs/images/dsci.png" alt="dsci_ui">
+<img src="images/dsci.png" alt="dsci_ui">
 </details>
 
 ### `DSC`
@@ -48,7 +48,7 @@ spec:
 
 <details>
 <summary>Click to expand</summary>
-<img src="docs/images/dsc.png" alt="dsc_ui">
+<img src="images/dsc.png" alt="dsc_ui">
 </details>
 
 ## Deploy A Gateway
@@ -85,14 +85,14 @@ With the gateway deployed, we can now deploy an `LLMInferenceService` using KSer
 The `deployment.yaml` contains a sample manifest for deploying:
 
 ```bash
-oc create ns llm-test
-oc apply -f deployment.yaml -n llm-test
+oc create ns demo-llm
+oc apply -f deployment.yaml -n demo-llm
 ```
 
 - We can see the `llminferenceservice` is deployed ...
 
 ```bash
-oc get llminferenceservice -n llm-test
+oc get llminferenceservice -n demo-llm
 
 >> NAME   URL   READY   REASON   AGE
 >> qwen         True             9m44s
@@ -101,7 +101,7 @@ oc get llminferenceservice -n llm-test
 - ... and that the `router-scheduler` and `vllm` pods are ready to go:
 
 ```bash
-oc get pods -n llm-test
+oc get pods -n demo-llm
 
 >> NAME                                            READY   STATUS    RESTARTS   AGE
 >> qwen-kserve-c59dbf75-5ztf2                      1/1     Running   0          9m15s
@@ -117,7 +117,7 @@ export INFERENCE_URL=$(
     -o jsonpath='{.status.addresses[0].value}'
 )
 
-curl -X POST http://${INFERENCE_URL}/llm-test/qwen/v1/completions \
+curl -X POST http://${INFERENCE_URL}/demo-llm/qwen/v1/completions \
   -H "Content-Type: application/json" \
   -d '{ "model": "Qwen/Qwen3-0.6B", "prompt": "Explain the difference between supervised and unsupervised learning in machine learning. Include examples of algorithms used in each type.", "max_tokens": 200, "temperature": 0.7, "top_p": 0.9 }'
 ```
@@ -125,9 +125,14 @@ curl -X POST http://${INFERENCE_URL}/llm-test/qwen/v1/completions \
 ## Cleanup
 
 ```bash
-oc delete llminferenceservice qwen -n llm-test
+oc delete llminferenceservice qwen -n demo-llm
 ```
 
 ## Issues
 
 - The namespace `opendatahub` is installed
+
+## TODO
+
+- [ ] Verify that gateway works on bare metal cluster
+- [ ] Create configuration for [GPT-OSS-20B](https://huggingface.co/openai/gpt-oss-20b)

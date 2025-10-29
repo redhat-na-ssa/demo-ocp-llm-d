@@ -2,7 +2,7 @@ apiVersion: serving.kserve.io/v1alpha1
 kind: LLMInferenceService
 metadata:
   name: qwen
-  namespace: llm-test
+  namespace: demo-llm
 spec:
   replicas: 2
   model:

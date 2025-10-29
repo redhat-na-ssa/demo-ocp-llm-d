@@ -5,13 +5,13 @@
 ## Deploy the `LLMInferenceService`
 
 ```bash
-oc apply -f pd-deployment -n llm-test
+oc apply -f pd-deployment -n demo-llm
 ```
 
 - We can see the `vllm` pods and the `router-scheduler` are deployed:
 
 ```bash
-oc get pods -n llm-test
+oc get pods -n demo-llm
 
 >> NAME                                               READY   STATUS     RESTARTS   AGE
 >> qwen-pd-kserve-5c656c9f44-n4j78                    2/2     Running    0          2m39s
@@ -22,7 +22,7 @@ oc get pods -n llm-test
 - We can query the model at the gateway's address:
 
 ```bash
-curl -X POST http://openshift-ai-inference-istio.openshift-ingress.svc.cluster.local/llm-test/qwen-pd/v1/completions \
+curl -X POST http://openshift-ai-inference-istio.openshift-ingress.svc.cluster.local/demo-llm/qwen-pd/v1/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "Qwen/Qwen3-0.6B",
@@ -36,5 +36,5 @@ curl -X POST http://openshift-ai-inference-istio.openshift-ingress.svc.cluster.l
 ## Cleanup
 
 ```bash
-oc delete llminferenceservice qwen-pd -n llm-test
+oc delete llminferenceservice qwen-pd -n demo-llm
 ```
