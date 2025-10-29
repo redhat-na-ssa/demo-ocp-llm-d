@@ -2,6 +2,8 @@
 
 A list of notes that need to be formalized into documentation
 
+Original repo - https://github.com/robertgshaw2-redhat/llm-d-demo
+
 ## Install Infra Prereqs
 
 - OpenShift 4.19 - dependencies needed for `llm-d` are shipped in OCP 4.19
