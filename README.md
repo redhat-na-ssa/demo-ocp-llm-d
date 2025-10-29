@@ -39,7 +39,7 @@ Setup cluster nodes
 ocp_machineset_scale 1
 
 # setup L40 single GPU machine set
-ocp_aws_machineset_create_gpu g6.2xlarge
+ocp_aws_machineset_create_gpu g6.xlarge
 
 # setup nvidia autoscaling
 apply_firmly demo/nvidia-gpu-autoscale/

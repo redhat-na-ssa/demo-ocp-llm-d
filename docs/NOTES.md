@@ -112,14 +112,31 @@ oc get pods -n demo-llm
 Send an HTTP request with the OpenAI API:
 
 ```sh
-export INFERENCE_URL=$(
+INFERENCE_URL=$(
   oc -n openshift-ingress get gateway openshift-ai-inference \
     -o jsonpath='{.status.addresses[0].value}'
 )
 
-curl -X POST http://${INFERENCE_URL}/demo-llm/qwen/v1/completions \
+LLM=openai/gpt-oss-20b
+LLM_SVC=${LLM##*/}
+
+PROMPT="Explain the difference between supervised and unsupervised learning in machine learning. Include examples of algorithms used in each type."
+
+llm_post_data(){
+cat <<JSON
+{
+  "model": "${LLM}",
+  "prompt": "${PROMPT}",
+  "max_tokens": 200,
+  "temperature": 0.7,
+  "top_p": 0.9
+}
+JSON
+}
+
+curl -s -X POST http://${INFERENCE_URL}/demo-llm/${LLM_SVC}/v1/completions \
   -H "Content-Type: application/json" \
-  -d '{ "model": "Qwen/Qwen3-0.6B", "prompt": "Explain the difference between supervised and unsupervised learning in machine learning. Include examples of algorithms used in each type.", "max_tokens": 200, "temperature": 0.7, "top_p": 0.9 }'
+  -d "$(llm_post_data)" | jq .choices[0].text
 ```
 
 ## Cleanup
