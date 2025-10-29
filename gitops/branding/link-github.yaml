@@ -3,7 +3,7 @@ kind: ConsoleLink
 metadata:
   name: github-demo
 spec:
-  href: 'https://github.com/redhat-na-ssa/llm-d-demo'
+  href: 'https://github.com/redhat-na-ssa/demo-ocp-llm-d'
   location: ApplicationMenu
   text: Demo - LLM-d on OCP
   applicationMenu:
