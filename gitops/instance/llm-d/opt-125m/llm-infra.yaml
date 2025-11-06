@@ -12,7 +12,7 @@ spec:
     scheduler:
       template:
         containers:
-          - name: main
+          - name: vllm
             args:
               - -v=4 # Debug level
               - --poolName
