@@ -23,3 +23,5 @@ spec:
               GUIDELLM_DATA="prompt_tokens=256,output_tokens=128"
 
               guidellm benchmark run
+
+              sleep infinity
