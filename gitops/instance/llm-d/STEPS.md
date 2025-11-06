@@ -58,13 +58,13 @@ spec:
 As described in [Getting Started with Gateway API for the Ingress Operator](https://docs.okd.io/latest/networking/ingress_load_balancing/configuring_ingress_cluster_traffic/ingress-gateway-api.html#nw-ingress-gateway-api-enable_ingress-gateway-api), we can can deploy a `GatewayClass` and `Gateway` named
 named `openshift-ai-inference` in the `openshift-ingress` namespace:
 
-```bash
+```sh
 oc apply -f gateway.yaml
 ```
 
 We can see the Gateway is deployed:
 
-```bash
+```sh
 oc get gateways -n openshift-ingress
 
 >> NAME                     CLASS   ADDRESS                                                            PROGRAMMED   AGE
@@ -77,14 +77,14 @@ With the gateway deployed, we can now deploy an `LLMInferenceService` using KSer
 
 The `llm-infra.yaml` contains a sample manifest for deploying:
 
-```bash
+```sh
 oc create ns demo-llm
 oc apply -f llm-infra.yaml -n demo-llm
 ```
 
 - We can see the `llminferenceservice` is deployed ...
 
-```bash
+```sh
 oc get llminferenceservice -n demo-llm
 
 >> NAME   URL   READY   REASON   AGE
@@ -93,7 +93,7 @@ oc get llminferenceservice -n demo-llm
 
 - ... and that the `router-scheduler` and `vllm` pods are ready to go:
 
-```bash
+```sh
 oc get pods -n demo-llm
 
 >> NAME                                            READY   STATUS    RESTARTS   AGE
@@ -134,6 +134,7 @@ curl -s -X POST http://${INFERENCE_URL}/demo-llm/${LLM_SVC}/v1/completions \
 
 ## Cleanup
 
-```bash
+```sh
 oc delete llminferenceservice qwen -n demo-llm
+oc delete ns demo-llm
 ```
