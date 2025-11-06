@@ -1,0 +1,14 @@
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: all-advertise
+  namespace: metallb-system
+spec:
+  # ipAddressPools:
+  #   - default
+  # nodeSelectors:
+  # - matchLabels:
+  #     kubernetes.io/hostname: vm-00
+  # interfaces:
+  # - enp1s0

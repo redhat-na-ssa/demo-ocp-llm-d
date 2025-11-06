@@ -1,0 +1,12 @@
+---
+apiVersion: metallb.io/v1beta1
+kind: BGPAdvertisement
+metadata:
+  name: default
+  namespace: metallb-system
+spec:
+  # ipAddressPools:
+  #   - default
+  # nodeSelectors:
+  # - matchLabels:
+  #     kubernetes.io/hostname: vm-00
