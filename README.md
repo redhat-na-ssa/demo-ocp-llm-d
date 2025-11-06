@@ -143,3 +143,6 @@ curl -s -X POST http://${INFERENCE_URL}/demo-llm/${LLM_SVC}/v1/completions \
 - [OAI Release Notes - 2.25](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.25/html-single/release_notes/index#developer-preview-features_relnotes)
 - [OAI Distributed Inference - 2.25](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.25/html/deploying_models/deploying_models_on_the_single_model_serving_platform#deploying-models-using-distributed-inference_rhoai-user)
 - [guideLLM](https://github.com/vllm-project/guidellm)
+- [Openshift Docs - MetalLB](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/networking_operators/metallb-operator)
+- [Openshift Docs - Ingress (GatewayAPI)](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/ingress_and_load_balancing/configuring-ingress-cluster-traffic#ingress-gateway-api)
+- [RHOAI Docs - Distributed Inference Examples](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.25/html/deploying_models/deploying_models_on_the_single_model_serving_platform#ref-example-distributed-inference_rhoai-user)
