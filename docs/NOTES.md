@@ -1,5 +1,9 @@
 # Notes
 
+## Links
+
+- [OAI / RHIIS VLLM Supported Models]()
+
 ## Issues
 
 - The namespace `opendatahub` is installed
