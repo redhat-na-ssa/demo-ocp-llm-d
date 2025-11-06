@@ -1,5 +1,9 @@
 # Notes
 
+vllm Image as of 11/05/2025:
+
+- `registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:df300e32078427d779738bd919cc53aee772118246388f3ea8d529af0e8a85e9`
+
 ## Links
 
 - [OAI / RHIIS VLLM Supported Models]()
