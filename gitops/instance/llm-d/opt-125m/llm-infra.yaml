@@ -12,7 +12,7 @@ spec:
     scheduler:
       template:
         containers:
-          - name: vllm
+          - name: main
             args:
               - -v=4 # Debug level
               - --poolName
@@ -60,7 +60,7 @@ spec:
     gateway: { }
   template:
     containers:
-      - name: vllm
+      - name: main
         resources:
           limits:
             cpu: '1'
