@@ -59,10 +59,10 @@ spec:
     route: { }
     gateway: { }
   template:
-    tolerations:
-      - key: "nvidia.com/gpu"
-        operator: "Exists"
-        effect: "NoSchedule"
+    # tolerations:
+    #   - key: "nvidia.com/gpu"
+    #     operator: "Exists"
+    #     effect: "NoSchedule"
     containers:
       - name: main
         env:
@@ -72,11 +72,11 @@ spec:
           limits:
             cpu: '1'
             memory: 8Gi
-            nvidia.com/gpu: "1"
+            # nvidia.com/gpu: "1"
           requests:
             cpu: '1'
             memory: 8Gi
-            nvidia.com/gpu: "1"
+            # nvidia.com/gpu: "1"
         livenessProbe:
           httpGet:
             path: /health

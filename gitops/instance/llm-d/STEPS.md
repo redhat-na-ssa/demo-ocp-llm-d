@@ -75,11 +75,11 @@ oc get gateways -n openshift-ingress
 
 With the gateway deployed, we can now deploy an `LLMInferenceService` using KServe, which creates an inference pool of vLLM servers and an end-point-picker (EPP) for smart scheduling across the vLLM servers.
 
-The `deployment.yaml` contains a sample manifest for deploying:
+The `llm-infra.yaml` contains a sample manifest for deploying:
 
 ```bash
 oc create ns demo-llm
-oc apply -f deployment.yaml -n demo-llm
+oc apply -f llm-infra.yaml -n demo-llm
 ```
 
 - We can see the `llminferenceservice` is deployed ...

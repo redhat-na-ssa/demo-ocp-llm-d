@@ -136,6 +136,7 @@ curl -s -X POST http://${INFERENCE_URL}/demo-llm/${LLM_SVC}/v1/completions \
 ## Additional Info
 
 - [Local Notes](docs/NOTES.md)
+- [Manual Steps](gitops/instance/llm-d/STEPS.md)
 - [Deploying a model by using the Distributed Inference Server with llm-d](https://access.redhat.com/articles/7131048)
 - [LLM-D: GPU-Accelerated Cache-Aware LLM Inference](https://github.com/cnuland/hello-chris-llm-d)
 - [Demystifying Inferencing at Scale with LLM-D on Red Hat Openshift on IBM Cloud](https://community.ibm.com/community/user/blogs/tyler-lisowski/2025/05/30/ai-demystifying-llmd)
