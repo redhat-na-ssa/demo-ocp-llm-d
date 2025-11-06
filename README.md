@@ -75,7 +75,7 @@ until oc apply -k gitops/ocp-4.18; do : ; done
 
 ### Bare Metal Dependencies (YOLO)
 
-The `MetalLB` operator, and a working configuration is needed to use `gatewayAPI` [in OpenShift](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/ingress_and_load_balancing/configuring-ingress-cluster-traffic#ingress-gateway-api)
+The `MetalLB` operator, and a working configuration, is needed to [use `gatewayAPI` in OpenShift](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/ingress_and_load_balancing/configuring-ingress-cluster-traffic#ingress-gateway-api).
 
 Install `MetalLB` operator
 
