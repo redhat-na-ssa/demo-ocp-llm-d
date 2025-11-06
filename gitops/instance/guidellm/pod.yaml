@@ -13,11 +13,17 @@ spec:
       - |
         #!/bin/bash
         
-        GUIDELLM_TARGET=http://llm-service:8000
-        GUIDELLM_RATE_TYPE=sweep
-        GUIDELLM_MAX_SECONDS=30
-        GUIDELLM_DATA="prompt_tokens=256,output_tokens=128"
+        # GUIDELLM_TARGET=http://llm-service:8000
+        # GUIDELLM_RATE_TYPE=sweep
+        # GUIDELLM_MAX_SECONDS=30
+        # GUIDELLM_DATA="prompt_tokens=256,output_tokens=128"
 
-        guidellm benchmark run
+        guidellm benchmark run \
+         --target https://gptoss-20b-guidellm.apps.cluster-m2qqw.m2qqw.sandbox1591.opentlc.com \
+         --model gptoss-20b \
+         --data "prompt_tokens=512,output_tokens=256" \
+         --rate-type sweep \
+         --max-seconds 60 \
+         --processor ./
 
         sleep infinity
