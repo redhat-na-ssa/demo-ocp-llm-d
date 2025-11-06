@@ -1,0 +1,24 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generatedName: guidellm-
+  # name: guidellm
+spec:
+  template:
+    spec:
+      containers:
+        - name: minion
+          image: ghcr.io/vllm-project/guidellm:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              #!/bin/bash
+
+              GUIDELLM_TARGET=http://llm-service:8000
+              GUIDELLM_RATE_TYPE=sweep
+              GUIDELLM_MAX_SECONDS=30
+              GUIDELLM_DATA="prompt_tokens=256,output_tokens=128"
+
+              guidellm benchmark run
