@@ -83,9 +83,7 @@ Install `MetalLB` operator
 oc apply -k demo/bare-metal
 ```
 
-### Basic BGP / L2 examples (requires modification)
-
-See [examples](gitops/instance/metallb-operator/)
+[Basic BGP / L2 examples](gitops/instance/metallb-operator/) (requires modification)
 
 ## Quickstart
 
