@@ -11,7 +11,10 @@ Open shell and run guidellm
 
 ```sh
 oc rsh guidellm
+
+# vi /tmp/functions
 . /tmp/functions
+
 run_guidellm
 ```
 
