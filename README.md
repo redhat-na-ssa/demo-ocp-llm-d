@@ -59,6 +59,15 @@ apply_firmly demo/nvidia-gpu-autoscale
 
 ### Model Serving + GuideLLM
 
+The following command will create a `InferenceService`
+using the model [gpt-oss-20b](https://huggingface.co/openai/gpt-oss-20b)
+in the `demo-guidellm` namespace.
+
+A `guidellm` pod will attempt to download tokenizer info and
+benchmark the model deployment above.
+
+[Additional Notes](gitops/instance/guidellm/NOTES.md)
+
 ```sh
 oc apply -k demo/guidellm
 ```
@@ -68,7 +77,7 @@ oc apply -k demo/guidellm
 The following command will create a `LLMInferenceService`
 using the model [gpt-oss-20b](https://huggingface.co/openai/gpt-oss-20b)
 in the `demo-llm` namespace
-with a `40G` persistent volume claim (to avoid downloading the model multiple times)
+with a `40G` persistent volume claim (to avoid downloading the model multiple times).
 
 ```sh
 until oc apply -k demo/llm-d; do : ; done

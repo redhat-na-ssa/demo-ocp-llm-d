@@ -1,5 +1,7 @@
 # Notes
 
+## Disconnected Notes
+
 Copy model files
 
 ```sh
@@ -13,13 +15,15 @@ Watch logs for an automated benchmark
 oc logs -f guidellm
 ```
 
+## More Ramblings
+
 Open shell and debug
 
 ```sh
 oc rsh guidellm
 ```
 
-If you use a python container
+You use a python container to install guidellm
 
 ```sh
 pip install guidellm[recommended]==0.3.1
