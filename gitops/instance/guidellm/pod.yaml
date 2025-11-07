@@ -36,7 +36,7 @@ spec:
         mountPath: /results      
   volumes:
     - name: tokenizer
-      configMap:
-        name: tokenizer
+      persistentVolumeClaim:
+        claimName: tokenizers
     - name: results
       emptyDir: {}

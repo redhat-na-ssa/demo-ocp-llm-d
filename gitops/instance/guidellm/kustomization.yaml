@@ -5,11 +5,11 @@ resources:
   - pod.yaml
   # - job.yaml
 
-generatorOptions:
-  disableNameSuffixHash: true
+# generatorOptions:
+#   disableNameSuffixHash: true
 
-configMapGenerator:
-- name: tokenizer
-  files:
-  - tokenizer.json
-  - tokenizer_config.json
+# configMapGenerator:
+# - name: tokenizer
+#   files:
+#   - tokenizer.json
+#   - tokenizer_config.json
