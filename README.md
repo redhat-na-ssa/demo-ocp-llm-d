@@ -69,7 +69,7 @@ benchmark the model deployment above.
 [Additional Notes](gitops/instance/guidellm/NOTES.md)
 
 ```sh
-oc apply -k demo/guidellm
+apply_firmly demo/guidellm
 ```
 
 ### Distributed Inference (llm-d)
