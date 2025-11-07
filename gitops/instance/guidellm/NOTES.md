@@ -19,6 +19,8 @@ Open shell and debug
 oc rsh guidellm
 ```
 
+If you use a python container
+
 ```sh
 pip install guidellm[recommended]==0.3.1
 

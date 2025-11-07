@@ -6,8 +6,7 @@ namespace: demo-guidellm
 resources:
   - namespace.yaml
   - pod.yaml
-  # - job.yaml
-  - pvc.yaml
+  # - pvc.yaml
 
 # generatorOptions:
 #   disableNameSuffixHash: true

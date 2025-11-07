@@ -32,7 +32,6 @@ spec:
         memory: 32Mi
     volumeMounts:
       - mountPath: /config
-        # name: data
         name: empty
         subPath: config
   containers:
@@ -100,10 +99,9 @@ spec:
         cpu: 600m
         memory: 512Mi
     volumeMounts:
-      - mountPath: /data
-        name: data
+      # - mountPath: /data
+      #   name: data
       - mountPath: /config
-        # name: data
         name: empty
         subPath: config
       - mountPath: /results
@@ -111,7 +109,7 @@ spec:
   volumes:
     - name: empty
       emptyDir: {}
-    - name: data
-      persistentVolumeClaim:
-        claimName: guidellm-data
-        # defaultMode: 775
+    # - name: data
+    #   persistentVolumeClaim:
+    #     claimName: guidellm-data
+    #     defaultMode: 775
