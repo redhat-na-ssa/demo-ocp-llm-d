@@ -41,6 +41,14 @@ spec:
 
         . /tmp/functions
 
+        echo "
+          # benchmarks will start after copying in the tokenizer
+          # verify model serving is running before copying files
+
+          oc cp tokenizer_config.json guidellm:/config
+          oc cp tokenizer.json guidellm:/config
+        "
+
         # wait for files to be ready
         until [ -e /config/tokenizer.json ]; do : ; done
 
