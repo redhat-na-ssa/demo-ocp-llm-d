@@ -31,7 +31,6 @@ spec:
     volumeMounts:
       - name: tokenizer
         mountPath: /tokenizer
-        readOnly: true
       - name: results
         mountPath: /results      
   volumes:
