@@ -58,6 +58,8 @@ spec:
           # GUIDELLM_MAX_SECONDS=30
           # GUIDELLM_DATA="prompt_tokens=256,output_tokens=128"
 
+          echo "Attempting benchmark..."
+
           guidellm benchmark run \
             --model gpt-oss-20b \
             --data "prompt_tokens=512,output_tokens=256" \
@@ -67,7 +69,6 @@ spec:
             --processor /config \
             --output-path /results
         
-          echo "Benchmark attempted..."
         }
         EOF
 
