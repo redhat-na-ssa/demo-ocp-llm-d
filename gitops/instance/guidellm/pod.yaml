@@ -23,7 +23,7 @@ spec:
           --model gptoss-20b \
           --data "prompt_tokens=512,output_tokens=256" \
           --rate-type sweep \
-          --max-seconds 60 \
+          --max-seconds 30 \
           --processor /tokenizer
           --output-path /results
 
