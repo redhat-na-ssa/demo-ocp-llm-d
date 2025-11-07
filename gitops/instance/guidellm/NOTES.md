@@ -7,7 +7,13 @@ oc cp tokenizer_config.json guidellm:/config
 oc cp tokenizer.json guidellm:/config
 ```
 
-Open shell and run guidellm
+Watch logs for an automated benchmark
+
+```sh
+oc logs -f guidellm
+```
+
+Open shell and debug
 
 ```sh
 oc rsh guidellm
@@ -20,10 +26,4 @@ pip install guidellm[recommended]==0.3.1
 . /tmp/functions
 
 run_guidellm
-```
-
-Watch logs for an automated benchmark
-
-```sh
-oc logs -f guidellm
 ```
