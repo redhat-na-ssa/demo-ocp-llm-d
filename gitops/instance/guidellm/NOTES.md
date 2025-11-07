@@ -11,6 +11,10 @@ Open shell and run guidellm
 
 ```sh
 oc rsh guidellm
+```
+
+```sh
+pip install guidellm[recommended]==0.3.1
 
 # vi /tmp/functions
 . /tmp/functions
