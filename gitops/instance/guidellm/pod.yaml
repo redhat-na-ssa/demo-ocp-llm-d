@@ -24,7 +24,7 @@ spec:
           --data "prompt_tokens=512,output_tokens=256" \
           --rate-type sweep \
           --max-seconds 30 \
-          --processor /tokenizer
+          --processor /tokenizer \
           --output-path /results
 
         sleep infinity
