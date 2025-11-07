@@ -11,32 +11,51 @@ spec:
       - /bin/bash
       - -c
       - |
-        #!/bin/bash
-        
-        # GUIDELLM_TARGET=http://llm-service:8000
-        # GUIDELLM_RATE_TYPE=sweep
-        # GUIDELLM_MAX_SECONDS=30
-        # GUIDELLM_DATA="prompt_tokens=256,output_tokens=128"
+        #!/bin/sh
 
-        guidellm benchmark run \
-          --target https://gptoss-20b-guidellm.apps.cluster-m2qqw.m2qqw.sandbox1591.opentlc.com \
-          --model gptoss-20b \
-          --data "prompt_tokens=512,output_tokens=256" \
-          --rate-type sweep \
-          --max-seconds 30 \
-          --processor /tokenizer \
-          --output-path /results
+        debug(){
+          echo "To infinity and beyond..."
+          sleep infinity
+        }
 
-        sleep infinity
+        cat <<EOF > /tmp/functions
+        run_guidellm(){
+
+          # GUIDELLM_TARGET=http://llm-service:8000
+          # GUIDELLM_RATE_TYPE=sweep
+          # GUIDELLM_MAX_SECONDS=30
+          # GUIDELLM_DATA="prompt_tokens=256,output_tokens=128"
+
+          guidellm benchmark run \
+            --target http://gpt-oss-20b-predictor \
+            --model gpt-oss-20b \
+            --data "prompt_tokens=512,output_tokens=256" \
+            --rate-type sweep \
+            --max-seconds 30 \
+            --processor /config \
+            --output-path /results
+        }
+        EOF
+
+        . /tmp/functions
+
+        # wait for files to be ready
+        until [ -e /config/tokenizer.json ]; do : ; done
+
+        # run_guidellm
+        debug
+
     volumeMounts:
-      - name: tokenizer
-        mountPath: /tokenizer
-      - name: results
-        mountPath: /results      
+      - mountPath: /config
+        # name: data
+        name: empty
+        subPath: config
+      - mountPath: /results
+        name: empty
   volumes:
-    - name: tokenizer
-      persistentVolumeClaim:
-        claimName: tokenizers
-        # defaultMode: 775
-    - name: results
+    - name: empty
       emptyDir: {}
+    - name: data
+      persistentVolumeClaim:
+        claimName: guidellm-data
+        # defaultMode: 775

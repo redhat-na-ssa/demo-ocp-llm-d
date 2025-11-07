@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: tokenizers
+  name: guidellm-data
   namespace: demo-guidellm
 spec:
   accessModes:
