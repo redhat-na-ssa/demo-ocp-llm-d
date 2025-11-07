@@ -37,6 +37,6 @@ spec:
     - name: tokenizer
       persistentVolumeClaim:
         claimName: tokenizers
-        defaultMode: 440
+        defaultMode: 775
     - name: results
       emptyDir: {}
