@@ -66,6 +66,8 @@ spec:
             --max-seconds 30 \
             --processor /config \
             --output-path /results
+        
+          echo "Benchmark attempted..."
         }
         EOF
 
