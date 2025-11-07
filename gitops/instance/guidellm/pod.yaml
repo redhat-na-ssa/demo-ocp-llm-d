@@ -60,8 +60,8 @@ spec:
 
           echo "Attempting benchmark..."
 
+          # Edit the model name as needed 
           guidellm benchmark run \
-            # Edit the model name as needed 
             --model gpt-oss-20b \
             --data "prompt_tokens=512,output_tokens=256" \
             --rate-type concurrent \
