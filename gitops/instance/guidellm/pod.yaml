@@ -7,6 +7,8 @@ spec:
   containers:
   - name: extended-resource-demo
     image: ghcr.io/vllm-project/guidellm:v0.3.0
+    securityContext:
+      fsGroup: 1000830001
     command:
       - /bin/bash
       - -c
@@ -37,6 +39,6 @@ spec:
     - name: tokenizer
       persistentVolumeClaim:
         claimName: tokenizers
-        defaultMode: 775
+        # defaultMode: 775
     - name: results
       emptyDir: {}
