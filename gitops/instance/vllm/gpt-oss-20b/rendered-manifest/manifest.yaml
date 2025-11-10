@@ -1,0 +1,97 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: ServingRuntime
+metadata:
+  annotations:
+    opendatahub.io/apiProtocol: REST
+    opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
+    opendatahub.io/runtime-version: v0.10.1.1
+    opendatahub.io/template-display-name: vLLM NVIDIA GPU ServingRuntime for KServe
+  labels:
+    app.kubernetes.io/instance: gpt-oss-20b
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: vllm-kserve
+    app.kubernetes.io/version: v0.10.1.1
+    helm.sh/chart: vllm-kserve-0.6.1
+    opendatahub.io/dashboard: "true"
+  name: gpt-oss-20b
+  namespace: gpt-oss-20b
+spec:
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "8080"
+  containers:
+  - args:
+    - --port=8080
+    - --model=/mnt/models
+    command:
+    - python
+    - -m
+    - vllm.entrypoints.openai.api_server
+    env:
+    - name: HF_HOME
+      value: /tmp/hf_home
+    image: registry.redhat.io/rhoai/odh-vllm-cuda-rhel9:v2.25.0-1759340926
+    name: kserve-container
+    ports:
+    - containerPort: 8080
+      protocol: TCP
+    volumeMounts:
+    - mountPath: /dev/shm
+      name: shm
+  multiModel: false
+  supportedModelFormats:
+  - autoSelect: true
+    name: vLLM
+  volumes:
+  - emptyDir:
+      medium: Memory
+      sizeLimit: 2Gi
+    name: shm
+---
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  annotations:
+    serving.kserve.io/deploymentMode: RawDeployment
+    serving.kserve.io/stop: "false"
+  labels:
+    app.kubernetes.io/instance: gpt-oss-20b
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: vllm-kserve
+    app.kubernetes.io/version: v0.10.1.1
+    helm.sh/chart: vllm-kserve-0.6.1
+    networking.kserve.io/visibility: exposed
+    opendatahub.io/dashboard: "true"
+  name: gpt-oss-20b
+  namespace: gpt-oss-20b
+spec:
+  predictor:
+    deploymentStrategy:
+      type: RollingUpdate
+    maxReplicas: 1
+    minReplicas: 1
+    model:
+      args:
+      - --served-model-name={{ .Name }}
+      - --max-model-len=100000
+      env:
+      - name: TIKTOKEN_ENCODINGS_BASE
+        value: /mnt/models/tiktoken_encodings
+      modelFormat:
+        name: vLLM
+      name: ""
+      resources:
+        limits:
+          cpu: "4"
+          memory: 8Gi
+          nvidia.com/gpu: 1
+        requests:
+          cpu: "2"
+          memory: 2Gi
+          nvidia.com/gpu: 1
+      runtime: gpt-oss-20b
+      storageUri: oci://quay.io/redhat-ai-services/modelcar-catalog:gpt-oss-20b
+    tolerations:
+    - effect: NoSchedule
+      key: nvidia.com/gpu
+      operator: Exists

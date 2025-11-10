@@ -1,0 +1,29 @@
+fullnameOverride: gpt-oss-20b
+
+model:
+  uri: oci://quay.io/redhat-ai-services/modelcar-catalog:gpt-oss-20b
+  args:
+    - --max-model-len=100000 # update this for GPU memory requirements
+  env:
+    - name: TIKTOKEN_ENCODINGS_BASE
+      value: '/mnt/models/tiktoken_encodings'
+
+endpoint:
+  externalRoute:
+    enabled: true
+
+# set this if your tolerations don't match this one
+# tolerations:
+#   - effect: NoSchedule
+#     key: nvidia.com/gpu
+#     operator: Exists
+
+resources:
+  requests:
+    cpu: '2'
+    memory: 2Gi
+    nvidia.com/gpu: 1
+  limits:
+    cpu: '4'
+    memory: 8Gi
+    nvidia.com/gpu: 1
