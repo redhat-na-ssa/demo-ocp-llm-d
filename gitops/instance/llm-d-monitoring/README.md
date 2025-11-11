@@ -14,24 +14,24 @@ This directory contains the Kustomize configuration for deploying Prometheus and
 
 To deploy the monitoring stack:
 
-```bash
-kubectl apply -k gitops/instance/monitoring/
+```sh
+oc apply -k gitops/instance/monitoring/
 ```
 
-### Using kubectl directly (legacy)
+### Using oc (kubectl) directly (legacy)
 
 Alternatively, you can use the individual commands:
 
-```bash
-kubectl create namespace llm-d-monitoring || true
-kubectl apply -f gitops/instance/monitoring/grafana.yaml
-kubectl apply -f gitops/instance/monitoring/grafana-service.yaml
-kubectl apply -f gitops/instance/monitoring/prometheus.yaml
-kubectl apply -f gitops/instance/monitoring/grafana-datasources.yaml
-kubectl apply -f gitops/instance/monitoring/grafana-dashboards-config.yaml
-kubectl apply -f gitops/instance/monitoring/grafana-config.yaml
-kubectl apply -f gitops/instance/monitoring/prometheus-config.yaml
-kubectl apply -f gitops/instance/monitoring/grafana-dashboard-llm-performance.json
+```sh
+oc create namespace llm-d-monitoring || true
+oc apply -f gitops/instance/monitoring/grafana.yaml
+oc apply -f gitops/instance/monitoring/grafana-service.yaml
+oc apply -f gitops/instance/monitoring/prometheus.yaml
+oc apply -f gitops/instance/monitoring/grafana-datasources.yaml
+oc apply -f gitops/instance/monitoring/grafana-dashboards-config.yaml
+oc apply -f gitops/instance/monitoring/grafana-config.yaml
+oc apply -f gitops/instance/monitoring/prometheus-config.yaml
+oc apply -f gitops/instance/monitoring/grafana-dashboard-llm-performance.json
 ```
 
 ## Files
