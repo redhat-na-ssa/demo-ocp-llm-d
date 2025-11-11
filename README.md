@@ -87,6 +87,40 @@ with a `40G` persistent volume claim (to avoid downloading the model multiple ti
 until oc apply -k demo/llm-d; do : ; done
 ```
 
+### Monitoring Stack (Prometheus + Grafana)
+
+The monitoring stack provides real-time metrics and dashboards for monitoring LLM inference performance, including Time to First Token (TTFT), inter-token latency, KV cache hit rates, and GPU utilization.
+
+#### Install Monitoring
+
+```sh
+kubectl apply -k gitops/instance/monitoring/
+```
+
+This deploys:
+- Prometheus for metrics collection and alerting
+- Grafana for visualization with pre-configured LLM performance dashboard
+- Auto-discovery of vLLM pods (no manual annotation required)
+
+#### Access Grafana
+
+```sh
+# Get the Grafana route URL
+oc get route grafana -n llm-d-monitoring -o jsonpath='{.spec.host}'
+```
+
+Default credentials:
+- Username: `admin`
+- Password: `admin`
+
+The LLM Performance dashboard will automatically display metrics from all vLLM pods.
+
+#### Uninstall Monitoring
+
+```sh
+kubectl delete -k gitops/instance/monitoring/
+```
+
 #### Send an HTTP request with the OpenAI API
 
 ```sh

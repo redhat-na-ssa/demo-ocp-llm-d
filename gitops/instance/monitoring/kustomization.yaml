@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: llm-d-monitoring
+
+resources:
+  - namespace.yaml
+  - grafana-config.yaml
+  - grafana-datasources.yaml
+  - grafana-dashboards-config.yaml
+  - prometheus-config.yaml
+  - prometheus.yaml
+  - grafana.yaml
+  - grafana-service.yaml
+
+configMapGenerator:
+  - name: grafana-dashboard-llm-performance
+    files:
+      - grafana-dashboard-llm-performance.json
