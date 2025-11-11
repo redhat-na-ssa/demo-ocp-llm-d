@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: gpt-oss-20b
+
+helmCharts:
+- name: vllm-kserve
+  releaseName: gpt-oss-20b
+  version: 0.6.1
+  repo: https://redhat-ai-services.github.io/helm-charts/
+  valuesFile: values.yaml
+  skipTests: true
