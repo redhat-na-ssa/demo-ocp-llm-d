@@ -63,7 +63,7 @@ DO NOT ignore this section!
 
 ### Model Serving + GuideLLM
 
-The following command will create a `InferenceService`
+The following command will create an `InferenceService`
 using the model [gpt-oss-20b](https://huggingface.co/openai/gpt-oss-20b)
 in the `demo-guidellm` namespace.
 
