@@ -41,6 +41,9 @@ $(wtoctl | grep 'oc delete')
 Setup cluster nodes
 
 ```sh
+# isolate the control plane
+ocp_control_nodes_not_schedulable
+
 # setup L40 single GPU machine set
 ocp_aws_machineset_create_gpu g6.xlarge
 
