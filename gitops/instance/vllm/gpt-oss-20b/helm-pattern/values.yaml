@@ -2,6 +2,7 @@ fullnameOverride: gpt-oss-20b
 
 model:
   uri: oci://quay.io/redhat-ai-services/modelcar-catalog:gpt-oss-20b
+  modelNameOverride: openai/gpt-oss-20b
   args:
     - --max-model-len=100000 # update this for GPU memory requirements
   env:

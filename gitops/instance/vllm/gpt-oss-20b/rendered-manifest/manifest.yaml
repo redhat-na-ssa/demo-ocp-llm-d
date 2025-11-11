@@ -72,7 +72,7 @@ spec:
     minReplicas: 1
     model:
       args:
-      - --served-model-name={{ .Name }}
+      - --served-model-name=openai/gpt-oss-20b
       - --max-model-len=100000
       env:
       - name: TIKTOKEN_ENCODINGS_BASE
