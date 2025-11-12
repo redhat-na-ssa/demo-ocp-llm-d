@@ -62,7 +62,7 @@ DO NOT ignore this section!
 
 [Prerequisites for OpenShift and MetalLB](docs/SETUP.md)
 
-## Quickstart
+## Quickstarts
 
 ### Model Serving + GuideLLM
 
@@ -98,6 +98,9 @@ The monitoring stack provides real-time metrics and dashboards for monitoring LL
 
 ```sh
 until oc apply -k gitops/instance/llm-d-monitoring ; do : ; done
+
+# get the grafana url
+oc get route grafana -n llm-d-monitoring -o jsonpath='{.spec.host}'
 ```
 
 [Additional Notes](gitops/instance/llm-d-monitoring/NOTES.md)
