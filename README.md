@@ -58,7 +58,7 @@ apply_firmly demo/nvidia-gpu-autoscale
 
 Prerequisites **MUST** be installed for the following!
 
-- `OpenShift 4.19+`
+- `OpenShift`
 - `OpenShift AI`
 - `MetalLB` (NOT required for cloud deployments)
 
