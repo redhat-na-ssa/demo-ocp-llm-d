@@ -13,7 +13,6 @@ metadata:
   labels:
     opendatahub.io/dashboard: "true"
   name: gpt-oss-20b
-  namespace: demo-guidellm
 spec:
   annotations:
     prometheus.io/path: /metrics

@@ -8,7 +8,6 @@ metadata:
     networking.kserve.io/visibility: exposed
     opendatahub.io/dashboard: "true"
   name: gpt-oss-20b
-  namespace: demo-guidellm
 spec:
   predictor:
     automountServiceAccountToken: false
