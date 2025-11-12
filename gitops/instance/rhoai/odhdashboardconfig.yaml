@@ -2,6 +2,7 @@ apiVersion: opendatahub.io/v1alpha
 kind: OdhDashboardConfig
 metadata:
   name: odh-dashboard-config
+  namespace: redhat-ods-applications
 spec:
   dashboardConfig:
     disableHardwareProfiles: false
