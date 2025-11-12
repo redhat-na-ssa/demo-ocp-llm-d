@@ -11,21 +11,29 @@ metadata:
 spec:
   predictor:
     automountServiceAccountToken: false
+    deploymentStrategy:
+      type: RollingUpdate
     maxReplicas: 1
     minReplicas: 1
     model:
+      # args:
+      # - --served-model-name=openai/gpt-oss-20b
+      # - --max-model-len=100000
+      # env:
+      # - name: TIKTOKEN_ENCODINGS_BASE
+      #   value: /mnt/models/tiktoken_encodings
       modelFormat:
         name: vLLM
       name: ""
       resources:
         limits:
-          cpu: "2"
+          cpu: "4"
           memory: 8Gi
-          nvidia.com/gpu: "1"
+          nvidia.com/gpu: 1
         requests:
-          cpu: "1"
-          memory: 4Gi
-          nvidia.com/gpu: "1"
+          cpu: "2"
+          memory: 2Gi
+          nvidia.com/gpu: 1
       runtime: gpt-oss-20b
       storageUri: oci://quay.io/redhat-ai-services/modelcar-catalog:gpt-oss-20b
     tolerations:
