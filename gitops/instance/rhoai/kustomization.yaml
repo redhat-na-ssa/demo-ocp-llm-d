@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - dsc.yaml
   - dsci.yaml
+  - fix-kubeadmin.yaml
