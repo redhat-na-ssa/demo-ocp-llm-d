@@ -21,7 +21,7 @@ This deploys:
 To deploy the monitoring stack:
 
 ```sh
-oc apply -k gitops/instance/monitoring/
+oc apply -k gitops/instance/llm-d-monitoring
 ```
 
 ### Using oc (kubectl) directly (legacy)
@@ -30,14 +30,14 @@ Alternatively, you can use the individual commands:
 
 ```sh
 oc create namespace llm-d-monitoring || true
-oc apply -f gitops/instance/monitoring/grafana.yaml
-oc apply -f gitops/instance/monitoring/grafana-service.yaml
-oc apply -f gitops/instance/monitoring/prometheus.yaml
-oc apply -f gitops/instance/monitoring/grafana-datasources.yaml
-oc apply -f gitops/instance/monitoring/grafana-dashboards-config.yaml
-oc apply -f gitops/instance/monitoring/grafana-config.yaml
-oc apply -f gitops/instance/monitoring/prometheus-config.yaml
-oc apply -f gitops/instance/monitoring/grafana-dashboard-llm-performance.json
+oc apply -f gitops/instance/llm-d-monitoring/grafana.yaml
+oc apply -f gitops/instance/llm-d-monitoring/grafana-service.yaml
+oc apply -f gitops/instance/llm-d-monitoring/prometheus.yaml
+oc apply -f gitops/instance/llm-d-monitoring/grafana-datasources.yaml
+oc apply -f gitops/instance/llm-d-monitoring/grafana-dashboards-config.yaml
+oc apply -f gitops/instance/llm-d-monitoring/grafana-config.yaml
+oc apply -f gitops/instance/llm-d-monitoring/prometheus-config.yaml
+oc apply -f gitops/instance/llm-d-monitoring/grafana-dashboard-llm-performance.json
 ```
 
 ## Files
