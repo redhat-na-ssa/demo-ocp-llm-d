@@ -103,7 +103,7 @@ until oc apply -k gitops/instance/llm-d-monitoring ; do : ; done
 oc get route grafana -n llm-d-monitoring -o jsonpath='{.spec.host}'
 ```
 
-[Additional Notes](gitops/instance/llm-d-monitoring/NOTES.md)
+[Additional Notes](gitops/instance/llm-d-monitoring/README.md)
 
 #### Send an HTTP request with the OpenAI API
 
