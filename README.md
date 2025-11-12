@@ -94,7 +94,8 @@ until oc apply -k demo/llm-d; do : ; done
 
 ### Distributed Inference Monitoring Stack (Prometheus + Grafana)
 
-The monitoring stack provides real-time metrics and dashboards for monitoring LLM inference performance, including Time to First Token (TTFT), inter-token latency, KV cache hit rates, and GPU utilization.
+The monitoring stack provides real-time metrics and dashboards for monitoring LLM inference performance, including Time to First Token (TTFT), inter-token latency, KV cache hit rates, and GPU utilization. This helps demonstrate the flexibility of OpenShift for collecting, monitoring, and display of
+inference performance provided by OpenShift AI.
 
 #### Install Monitoring
 
@@ -156,5 +157,6 @@ curl -s -X POST http://${INFERENCE_URL}/demo-llm/${LLM_SVC}/v1/completions \
 - [guideLLM](https://github.com/vllm-project/guidellm)
 - [Openshift Docs - MetalLB](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/networking_operators/metallb-operator)
 - [Openshift Docs - Ingress (GatewayAPI)](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/ingress_and_load_balancing/configuring-ingress-cluster-traffic#ingress-gateway-api)
+- [LLM-d - Why do you need a Gateway?](https://github.com/llm-d/llm-d/blob/main/guides/prereq/gateway-provider/README.md#why-do-you-need-a-gateway)
 - [RHOAI Docs - Distributed Inference Examples](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.25/html/deploying_models/deploying_models_on_the_single_model_serving_platform#ref-example-distributed-inference_rhoai-user)
 - [Documentation and Improvements for exposing llm-d Gateway](https://issues.redhat.com/browse/INFERENG-3141)
