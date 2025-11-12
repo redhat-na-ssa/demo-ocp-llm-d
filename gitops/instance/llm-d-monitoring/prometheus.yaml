@@ -1,3 +1,4 @@
+---
 # Prometheus ServiceAccount
 apiVersion: v1
 kind: ServiceAccount

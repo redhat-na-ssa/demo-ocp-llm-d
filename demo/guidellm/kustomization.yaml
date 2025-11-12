@@ -3,4 +3,4 @@ kind: Kustomization
 
 resources:
   - ../../gitops/instance/guidellm
-  - ../../gitops/instance/model-serving  
+  - ../../gitops/instance/model-serving

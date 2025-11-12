@@ -4,5 +4,4 @@ kind: Kustomization
 namespace: demo-guidellm
 
 resources:
-  - inference-service.yaml
-  - serving-runtime.yaml
+  - base

@@ -6,14 +6,13 @@ metadata:
     opendatahub.io/apiProtocol: REST
     opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
     opendatahub.io/runtime-version: v0.10.1.1
-    opendatahub.io/serving-runtime-scope: global
+    # opendatahub.io/serving-runtime-scope: global
     opendatahub.io/template-display-name: vLLM NVIDIA GPU ServingRuntime for KServe
-    opendatahub.io/template-name: vllm-cuda-runtime
-    openshift.io/display-name: gpt-oss-20b
+    # opendatahub.io/template-name: vllm-cuda-runtime
+    # openshift.io/display-name: gpt-oss-20b
   labels:
     opendatahub.io/dashboard: "true"
   name: gpt-oss-20b
-  namespace: demo-guidellm
 spec:
   annotations:
     prometheus.io/path: /metrics
@@ -31,6 +30,7 @@ spec:
     - name: HF_HOME
       value: /tmp/hf_home
     image: registry.redhat.io/rhoai/odh-vllm-cuda-rhel9@sha256:fb84fbf103bf450ef5b060fc5f21a9cf16b166dba207a3c50aa91bccd919d604
+    # image: registry.redhat.io/rhoai/odh-vllm-cuda-rhel9:v2.25.0-1759340926
     name: kserve-container
     ports:
     - containerPort: 8080

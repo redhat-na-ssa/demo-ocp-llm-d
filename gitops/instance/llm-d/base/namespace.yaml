@@ -3,6 +3,7 @@ kind: Namespace
 metadata:
   annotations:
     openshift.io/display-name: Demo - LLM-d
+    openshift.io/description: "An example of distributed inference in RHOAI"
   labels:
     openshift.io/cluster-monitoring: "true"
   name: demo-llm

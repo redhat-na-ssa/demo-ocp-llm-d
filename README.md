@@ -41,6 +41,9 @@ $(wtoctl | grep 'oc delete')
 Setup cluster nodes
 
 ```sh
+# isolate the control plane
+ocp_control_nodes_not_schedulable
+
 # setup L40 single GPU machine set
 ocp_aws_machineset_create_gpu g6.xlarge
 
@@ -53,13 +56,15 @@ apply_firmly demo/nvidia-gpu-autoscale
 
 ### Additional Prerequisites
 
-OpenShift and MetalLB Prerequisites **MUST** be installed!
+Prerequisites **MUST** be installed for the following!
 
-DO NOT ignore this section!
+- `OpenShift`
+- `OpenShift AI`
+- `MetalLB` - *not required for cloud deployments*
 
-[Prerequisites for OpenShift and MetalLB](docs/SETUP.md)
+[DO NOT ignore this section!](docs/SETUP.md)
 
-## Quickstart
+## Quickstarts
 
 ### Model Serving + GuideLLM
 
@@ -87,39 +92,20 @@ with a `40G` persistent volume claim (to avoid downloading the model multiple ti
 until oc apply -k demo/llm-d; do : ; done
 ```
 
-### Monitoring Stack (Prometheus + Grafana)
+### Distributed Inference Monitoring Stack (Prometheus + Grafana)
 
 The monitoring stack provides real-time metrics and dashboards for monitoring LLM inference performance, including Time to First Token (TTFT), inter-token latency, KV cache hit rates, and GPU utilization.
 
 #### Install Monitoring
 
 ```sh
-kubectl apply -k gitops/instance/monitoring/
-```
+until oc apply -k gitops/instance/llm-d-monitoring ; do : ; done
 
-This deploys:
-- Prometheus for metrics collection and alerting
-- Grafana for visualization with pre-configured LLM performance dashboard
-- Auto-discovery of vLLM pods (no manual annotation required)
-
-#### Access Grafana
-
-```sh
-# Get the Grafana route URL
+# get the grafana url
 oc get route grafana -n llm-d-monitoring -o jsonpath='{.spec.host}'
 ```
 
-Default credentials:
-- Username: `admin`
-- Password: `admin`
-
-The LLM Performance dashboard will automatically display metrics from all vLLM pods.
-
-#### Uninstall Monitoring
-
-```sh
-kubectl delete -k gitops/instance/monitoring/
-```
+[Additional Notes](gitops/instance/llm-d-monitoring/README.md)
 
 #### Send an HTTP request with the OpenAI API
 

@@ -1,4 +1,6 @@
-# Additional Prerequisites
+# Demo Setup
+
+## Additional Prerequisites
 
 ### OpenShift 4.19+
 
@@ -22,16 +24,16 @@ See [ocp-4.18](gitops/ocp-4.18) for installation of `llm-d` dependencies
 until oc apply -k gitops/ocp-4.18; do : ; done
 ```
 
-### Bare Metal Dependencies (Bare Metal Specific)
+### Bare Metal OpenShift
 
-The `MetalLB` operator, and a working configuration, is needed to [use `gatewayAPI` in OpenShift](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/ingress_and_load_balancing/configuring-ingress-cluster-traffic#ingress-gateway-api) when running on bare metal clusters. 
+The `MetalLB` operator, and a working configuration, is needed to [use `gatewayAPI` in OpenShift](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/ingress_and_load_balancing/configuring-ingress-cluster-traffic#ingress-gateway-api) when running on bare metal clusters.
 
 This is **NOT required for cloud deployments**
 
 Install `MetalLB` operator
 
 ```sh
-oc apply -k demo/bare-metal
+oc apply -k gitops/operators/metallb-operator
 ```
 
-[Basic BGP / L2 examples](gitops/instance/metallb-operator/) (requires modification)
+[Basic BGP / L2 examples](gitops/instance/metallb-operator) (requires modification)
