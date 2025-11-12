@@ -3,7 +3,7 @@ kind: ConsoleNotification
 metadata:
   name: banner-demo
 spec:
-  text: "DEMO - LLM-d on OpenShift"
+  text: "DEMO - Distributed Inference (LLM-d) on OpenShift"
   # valid locations: BannerTop, BannerBottom, BannerTopBottom
   location: BannerTop
   # https://htmlcolorcodes.com/color-picker
