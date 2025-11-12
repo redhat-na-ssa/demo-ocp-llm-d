@@ -157,3 +157,4 @@ curl -s -X POST http://${INFERENCE_URL}/demo-llm/${LLM_SVC}/v1/completions \
 - [Openshift Docs - MetalLB](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/networking_operators/metallb-operator)
 - [Openshift Docs - Ingress (GatewayAPI)](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/ingress_and_load_balancing/configuring-ingress-cluster-traffic#ingress-gateway-api)
 - [RHOAI Docs - Distributed Inference Examples](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.25/html/deploying_models/deploying_models_on_the_single_model_serving_platform#ref-example-distributed-inference_rhoai-user)
+- [Documentation and Improvements for exposing llm-d Gateway](https://issues.redhat.com/browse/INFERENG-3141)
