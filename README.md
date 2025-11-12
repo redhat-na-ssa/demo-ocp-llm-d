@@ -60,7 +60,7 @@ Prerequisites **MUST** be installed for the following!
 
 - `OpenShift`
 - `OpenShift AI`
-- `MetalLB` (NOT required for cloud deployments)
+- `MetalLB` - *not required for cloud deployments*
 
 [DO NOT ignore this section!](docs/SETUP.md)
 
