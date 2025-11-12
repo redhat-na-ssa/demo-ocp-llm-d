@@ -56,11 +56,12 @@ apply_firmly demo/nvidia-gpu-autoscale
 
 ### Additional Prerequisites
 
-OpenShift and MetalLB Prerequisites **MUST** be installed!
+Prerequisites **MUST** be installed for the following!
 
-DO NOT ignore this section!
+- `OpenShift`
+- `MetalLB`
 
-[Prerequisites for OpenShift and MetalLB](docs/SETUP.md)
+[DO NOT ignore this section!](docs/SETUP.md)
 
 ## Quickstarts
 
