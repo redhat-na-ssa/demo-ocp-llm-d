@@ -5,6 +5,7 @@ mirror:
   - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
     packages:
     - name: rhods-operator
+      defaultChannel: stable-2.25
       channels:
       - name: stable-2.25
         minVersion: 2.25.0
