@@ -1,0 +1,60 @@
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: guidellm-benchmark-job
+  namespace: vllm-inference
+spec:
+  manualSelector: false
+  backoffLimit: 1
+  completions: 1
+  template:
+    metadata:
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 001.nvidia.dc.redhat.com
+      restartPolicy: Never
+      containers:
+        - resources: {}
+          name: guidellm
+          command:
+            - guidellm
+          env:
+            - name: HUGGING_FACE_HUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: huggingface-secret
+                  key: hf_token
+            - name: HF_HOME
+              value: /tmp/huggingface_cache
+          # securityContext:
+          #   runAsUser: 0
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: results-volume
+              mountPath: /results
+          image: 'ghcr.io/vllm-project/guidellm@sha256:f7123f5a4b9283e721a9b43bc99e8b2a1d9eac1c1e1ecba47b5368998c341ff3'
+          args:
+            - benchmark
+            - '--target'
+            - 'http://vllm-granite-8b-aiu2.vllm-inference.svc.cluster.local:8001'
+            - '--model'
+            - ibm-granite/granite-3.3-8b-instruct
+            - '--processor'
+            - ibm-granite/granite-3.3-8b-instruct
+            - '--data'
+            - '{"prompt_tokens":1000,"output_tokens":1000}'
+            - '--rate-type'
+            - concurrent
+            - '--max-seconds'
+            - '300'
+            - '--rate'
+            - '1,2,4,8,16'
+            - '--output-path'
+            - /results/output-cb1to16.json
+      volumes:
+        - name: results-volume
+          persistentVolumeClaim:
+            claimName: vllm-models-pvc
+      dnsPolicy: ClusterFirst
+  parallelism: 1
+  podReplacementPolicy: TerminatingOrFailed
