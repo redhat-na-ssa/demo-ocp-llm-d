@@ -6,7 +6,7 @@ metadata:
 spec:
   replicas: 1
   model:
-    uri: hf://openai/gpt-oss-20b
+    uri: <patch-me>
     name: openai/gpt-oss-20b
   router:
     scheduler:
@@ -86,7 +86,3 @@ spec:
       - key: "nvidia.com/gpu"
         operator: "Exists"
         effect: "NoSchedule"
-    volumes:
-      - name: kserve-provision-location
-        persistentVolumeClaim:
-          claimName: gpt-oss-20b
