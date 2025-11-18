@@ -1,6 +1,5 @@
 # Notes for a Disconnected install
 
-
 Create `isc.yaml` - edit the copy for your needs
 
 ```sh
