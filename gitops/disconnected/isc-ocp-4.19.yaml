@@ -1,0 +1,18 @@
+# oc-mirror -c ./isc.yaml --workspace file:///${PWD}/scratch/oc-mirror docker://registry:5000 --v2 --image-timeout 60m
+kind: ImageSetConfiguration
+apiVersion: mirror.openshift.io/v2alpha1
+mirror:
+  platform:
+    channels:
+    - name: stable-4.19
+      minVersion: 4.19.17
+      maxVersion: 4.19.17
+  # operators:
+  #   - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
+  #     packages:
+  #       - name: cincinnati-operator
+  #       - name: devworkspace-operator
+  #       - name: web-terminal
+  # additionalImages:
+  #   - name: ghcr.io/redhat-na-ssa/web-terminal-tooling:latest
+  #   - name: registry.redhat.io/openshift4/ose-cli:latest
