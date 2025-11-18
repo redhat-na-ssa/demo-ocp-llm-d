@@ -14,6 +14,9 @@ Create `mapping.txt`
 ```sh
 REGISTRY=registry:5000
 
+# NOTE: replace with 'quay.io' if oc mirror loses its mind
+# REGISTRY=quay.io
+
 oc-mirror \
   -c scratch/isc-rhoai.yaml \
   --workspace file:///${PWD}/scratch/oc-mirror \
