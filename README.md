@@ -147,6 +147,7 @@ curl -s -X POST http://${INFERENCE_URL}/demo-llm/${LLM_SVC}/v1/completions \
 
 ## Additional Info
 
+- [Disconnected RHOAI Notes](gitops/disconnected/DISCONNECTED.md)
 - [Local Notes](docs/NOTES.md)
 - [Manual Steps](gitops/instance/llm-d/STEPS.md)
 - [Deploying a model by using the Distributed Inference Server with llm-d](https://access.redhat.com/articles/7131048)
