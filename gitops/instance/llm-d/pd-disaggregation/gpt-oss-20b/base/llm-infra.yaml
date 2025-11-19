@@ -24,6 +24,15 @@ spec:
             cpu: '1'
             memory: 8Gi
             nvidia.com/gpu: '1'
+        livenessProbe:
+          initialDelaySeconds: 10
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8001
+            scheme: HTTPS
+          failureThreshold: 60
+          periodSeconds: 10
     tolerations:
       - effect: NoSchedule
         key: nvidia.com/gpu
@@ -42,6 +51,15 @@ spec:
               cpu: '1'
               memory: 8Gi
               nvidia.com/gpu: '1'
+          livenessProbe:
+            initialDelaySeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+              scheme: HTTPS
+            failureThreshold: 60
+            periodSeconds: 10
       tolerations:
         - effect: NoSchedule
           key: nvidia.com/gpu
