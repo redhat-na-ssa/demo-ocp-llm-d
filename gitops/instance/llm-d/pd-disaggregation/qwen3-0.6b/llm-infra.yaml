@@ -83,14 +83,14 @@ spec:
         resources:
           limits:
             cpu: '4'
-            memory: 32Gi
+            memory: 16Gi
             nvidia.com/gpu: "1"
-            rdma/roce_gdr: 1
+            # rdma/roce_gdr: 1
           requests:
             cpu: '4'
-            memory: 32Gi
+            memory: 16Gi
             nvidia.com/gpu: "1"
-            rdma/roce_gdr: 1
+            # rdma/roce_gdr: 1
         livenessProbe:
           httpGet:
             path: /health
@@ -100,6 +100,10 @@ spec:
           periodSeconds: 30
           timeoutSeconds: 30
           failureThreshold: 5
+    tolerations:
+      - key: "nvidia.com/gpu"
+        operator: "Exists"
+        effect: "NoSchedule"
   prefill:
     # Prefill pool replica count (higher for concurrent prefill requests)
     replicas: 1
@@ -124,12 +128,12 @@ spec:
               cpu: '4'
               memory: 32Gi
               nvidia.com/gpu: "1"
-              rdma/roce_gdr: 1
+              # rdma/roce_gdr: 1
             requests:
               cpu: '4'
               memory: 32Gi
               nvidia.com/gpu: "1"
-              rdma/roce_gdr: 1
+              # rdma/roce_gdr: 1
           livenessProbe:
             httpGet:
               path: /health
@@ -139,3 +143,7 @@ spec:
             periodSeconds: 30
             timeoutSeconds: 30
             failureThreshold: 5
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
