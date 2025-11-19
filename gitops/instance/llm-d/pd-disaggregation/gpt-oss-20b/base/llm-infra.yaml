@@ -18,7 +18,7 @@ spec:
         resources:
           limits:
             cpu: '4'
-            memory: 8Gi
+            memory: 16Gi
             nvidia.com/gpu: '1'
           requests:
             cpu: '1'
@@ -36,7 +36,7 @@ spec:
           resources:
             limits:
               cpu: '4'
-              memory: 8Gi
+              memory: 16Gi
               nvidia.com/gpu: '1'
             requests:
               cpu: '1'
