@@ -1,0 +1,146 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: LLMInferenceService
+metadata:
+  name: gpt-oss-20b
+  namespace: demo-llm
+spec:
+  replicas: 1
+  model:
+    uri: <patch-me>
+    name: openai/gpt-oss-20b
+  router:
+    scheduler:
+      template:
+        containers:
+          - name: main
+            args:
+              - -v=4 # Debug level
+              - --poolName
+              - "{{ ChildName .ObjectMeta.Name `-inference-pool` }}"
+              - --poolNamespace
+              - "{{ .ObjectMeta.Namespace }}"
+              - --zap-encoder
+              - json
+              - --grpcPort
+              - "9002"
+              - --grpcHealthPort
+              - "9003"
+              - --secureServing
+              - --modelServerMetricsScheme
+              - https
+              - --modelServerMetricsHttpsInsecureSkipVerify
+              - --certPath
+              - /etc/ssl/certs
+              - --configText
+              - |2
+
+                apiVersion: inference.networking.x-k8s.io/v1alpha1
+                kind: EndpointPickerConfig
+                plugins:
+                - type: pd-profile-handler  # Separates prefill and decode requests
+                  parameters:
+                    threshold: 0  # Always separate (0 = all requests use PD separation)
+                - type: prefill-header-handler
+                - type: prefill-filter
+                - type: decode-filter
+                - type: random-picker
+                  parameters:
+                    maxNumOfEndpoints: 1
+                schedulingProfiles:
+                - name: prefill
+                  plugins:
+                  - pluginRef: prefill-filter
+                  - pluginRef: random-picker
+                - name: decode
+                  plugins:
+                  - pluginRef: decode-filter
+                  - pluginRef: random-picker
+    route: { }
+    gateway: { }
+  template:
+    containers:
+      - name: main
+        env:
+          # Enable RDMA for KV cache transfer
+          - name: KSERVE_INFER_ROCE
+            value: "true"
+          # Pod IP for KV transfer side channel
+          - name: VLLM_NIXL_SIDE_CHANNEL_HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          # Enable KV cache transfer via NixlConnector (RDMA-based)
+          - name: VLLM_ADDITIONAL_ARGS
+            value: "--kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}'"
+          # UCX configuration for RDMA transport
+          - name: UCX_PROTO_INFO
+            value: "y"
+          - name: UCX_TLS
+            value: "rc,sm,self,cuda_copy,cuda_ipc,gdr_copy"
+        resources:
+          limits:
+            cpu: '4'
+            memory: 16Gi
+            nvidia.com/gpu: "1"
+            # rdma/roce_gdr: 1
+          requests:
+            cpu: '4'
+            memory: 16Gi
+            nvidia.com/gpu: "1"
+            # rdma/roce_gdr: 1
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+            scheme: HTTPS
+          initialDelaySeconds: 120
+          periodSeconds: 30
+          timeoutSeconds: 30
+          failureThreshold: 5
+    tolerations:
+      - key: "nvidia.com/gpu"
+        operator: "Exists"
+        effect: "NoSchedule"
+  prefill:
+    # Prefill pool replica count (higher for concurrent prefill requests)
+    replicas: 1
+    template:
+      containers:
+        - name: main
+          env:
+            - name: KSERVE_INFER_ROCE
+              value: "true"
+            - name: VLLM_NIXL_SIDE_CHANNEL_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: VLLM_ADDITIONAL_ARGS
+              value: "--kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}'"
+            - name: UCX_PROTO_INFO
+              value: "y"
+            - name: UCX_TLS
+              value: "rc,sm,self,cuda_copy,cuda_ipc,gdr_copy"
+          resources:
+            limits:
+              cpu: '4'
+              memory: 32Gi
+              nvidia.com/gpu: "1"
+              # rdma/roce_gdr: 1
+            requests:
+              cpu: '4'
+              memory: 32Gi
+              nvidia.com/gpu: "1"
+              # rdma/roce_gdr: 1
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+              scheme: HTTPS
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            timeoutSeconds: 30
+            failureThreshold: 5
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"

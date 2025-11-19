@@ -1,0 +1,8 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: LLMInferenceService
+metadata:
+  name: gpt-oss-20b
+  namespace: demo-llm
+spec:
+  model:
+    uri: oci://quay.io/redhat-ai-services/modelcar-catalog:gpt-oss-20b
