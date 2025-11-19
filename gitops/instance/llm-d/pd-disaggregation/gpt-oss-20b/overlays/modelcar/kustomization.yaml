@@ -8,4 +8,4 @@ patches:
   - path: llm-infra-patch.yaml
     target:
       kind: LLMInferenceService
-      name: gpt-oss-20b
+      name: gpt-oss-20b-pfd

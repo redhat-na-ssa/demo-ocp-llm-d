@@ -1,7 +1,7 @@
 apiVersion: serving.kserve.io/v1alpha1
 kind: LLMInferenceService
 metadata:
-  name: gpt-oss-20b
+  name: gpt-oss-20b-pfd
   namespace: demo-llm
 spec:
   model:
