@@ -68,18 +68,3 @@ guidellm benchmark \
     --rate 50,25,10,5,1 \
     --max-seconds 120
 ```
-
-### Disconnected Environment
-
-For disconnected/air-gapped environments, specify a local tokenizer:
-
-```bash
-guidellm benchmark \
-    --target http://<gateway-hostname>/<namespace>/<llm-d-instance> \
-    --model openai/gpt-oss-20b \
-    --processor /path/to/local/tokenizer \
-    --data guidellm_formatted_prompts.csv \
-    --rate-type concurrent \
-    --rate 500,250,100,50,25,10,5,1 \
-    --max-seconds 120
-```
