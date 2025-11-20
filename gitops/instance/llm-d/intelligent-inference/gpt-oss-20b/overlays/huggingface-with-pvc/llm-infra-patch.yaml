@@ -1,0 +1,14 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: LLMInferenceService
+metadata:
+  name: gpt-oss-20b
+  namespace: demo-llm
+spec:
+  replicas: 1
+  model:
+    uri: hf://openai/gpt-oss-20b
+  template:
+    volumes:
+      - name: kserve-provision-location
+        persistentVolumeClaim:
+          claimName: gpt-oss-20b

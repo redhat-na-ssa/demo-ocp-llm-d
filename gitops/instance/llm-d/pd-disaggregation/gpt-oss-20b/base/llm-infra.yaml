@@ -1,0 +1,66 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: LLMInferenceService
+metadata:
+  name: gpt-oss-20b-pfd
+  namespace: demo-llm
+spec:
+  replicas: 1
+  model:
+    uri: <patch-me>
+    name: openai/gpt-oss-20b
+  router:
+    gateway: {}
+    route: {}
+    scheduler: {}
+  template:
+    containers:
+      - name: main
+        resources:
+          limits:
+            cpu: '4'
+            memory: 16Gi
+            nvidia.com/gpu: '1'
+          requests:
+            cpu: '1'
+            memory: 8Gi
+            nvidia.com/gpu: '1'
+        livenessProbe:
+          initialDelaySeconds: 10
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8001
+            scheme: HTTPS
+          failureThreshold: 60
+          periodSeconds: 10
+    tolerations:
+      - effect: NoSchedule
+        key: nvidia.com/gpu
+        operator: Exists
+  prefill:
+    replicas: 1
+    template:
+      containers:
+        - name: main
+          resources:
+            limits:
+              cpu: '4'
+              memory: 16Gi
+              nvidia.com/gpu: '1'
+            requests:
+              cpu: '1'
+              memory: 8Gi
+              nvidia.com/gpu: '1'
+          livenessProbe:
+            initialDelaySeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+              scheme: HTTPS
+            failureThreshold: 60
+            periodSeconds: 10
+      tolerations:
+        - effect: NoSchedule
+          key: nvidia.com/gpu
+          operator: Exists

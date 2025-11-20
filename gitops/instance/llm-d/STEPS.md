@@ -59,7 +59,7 @@ As described in [Getting Started with Gateway API for the Ingress Operator](http
 named `openshift-ai-inference` in the `openshift-ingress` namespace:
 
 ```sh
-oc apply -f gateway.yaml
+oc apply -k gitops/instance/llm-d/gateway
 ```
 
 We can see the Gateway is deployed:
@@ -71,15 +71,18 @@ oc get gateways -n openshift-ingress
 >> openshift-ai-inference   istio   openshift-ai-inference-istio.openshift-ingress.svc.cluster.local   True         9d
 ```
 
+## Deploy the demo-llm namespace
+
+```
+oc apply -k gitops/instance/llm-d/namespace
+```
+
 ## Deploy An LLMService with `llm-d`
 
 With the gateway deployed, we can now deploy an `LLMInferenceService` using KServe, which creates an inference pool of vLLM servers and an end-point-picker (EPP) for smart scheduling across the vLLM servers.
 
-The `llm-infra.yaml` contains a sample manifest for deploying:
-
 ```sh
-oc create ns demo-llm
-oc apply -f llm-infra.yaml -n demo-llm
+oc apply -k gitops/instance/llm-d/intelligent-inference/gpt-oss-20b/overlays/modelcar
 ```
 
 - We can see the `llminferenceservice` is deployed ...
@@ -88,7 +91,7 @@ oc apply -f llm-infra.yaml -n demo-llm
 oc get llminferenceservice -n demo-llm
 
 >> NAME   URL   READY   REASON   AGE
->> qwen         True             9m44s
+>> gpt-oss-20b         True             9m44s
 ```
 
 - ... and that the `router-scheduler` and `vllm` pods are ready to go:
@@ -97,9 +100,9 @@ oc get llminferenceservice -n demo-llm
 oc get pods -n demo-llm
 
 >> NAME                                            READY   STATUS    RESTARTS   AGE
->> qwen-kserve-c59dbf75-5ztf2                      1/1     Running   0          9m15s
->> qwen-kserve-c59dbf75-dlfj6                      1/1     Running   0          9m15s
->> qwen-kserve-router-scheduler-67dbbfb947-hn7ln   1/1     Running   0          9m15s
+>> gpt-oss-20b-kserve-c59dbf75-5ztf2                      1/1     Running   0          9m15s
+>> gpt-oss-20b-kserve-c59dbf75-dlfj6                      1/1     Running   0          9m15s
+>> gpt-oss-20b-kserve-router-scheduler-67dbbfb947-hn7ln   1/1     Running   0          9m15s
 ```
 
 Send an HTTP request with the OpenAI API:
@@ -135,6 +138,6 @@ curl -s -X POST http://${INFERENCE_URL}/demo-llm/${LLM_SVC}/v1/completions \
 ## Cleanup
 
 ```sh
-oc delete llminferenceservice qwen -n demo-llm
+oc delete llminferenceservice gpt-oss-20b -n demo-llm
 oc delete ns demo-llm
 ```
