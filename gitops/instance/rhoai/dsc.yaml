@@ -16,6 +16,8 @@ spec:
       defaultDeploymentMode: RawDeployment
       nim:
         managementState: Removed
+      # NOTE: 'Headless' bypasses service ports directly to pod port
+      # NOTE: 'Headless' makes k8s not work as expected
       rawDeploymentServiceConfig: Headed
       serving:
         ingressGateway:
