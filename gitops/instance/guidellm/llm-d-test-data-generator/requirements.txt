@@ -1,2 +1,2 @@
 pandas
-guidellm
+guidellm==0.3.1
