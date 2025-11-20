@@ -6,6 +6,7 @@ metadata:
 spec:
   replicas: 1
   model:
+    # uri: pvc://<name-of-pvc>/<optional-subfolder>
     uri: <patch-me>
     name: openai/gpt-oss-20b
   router:
