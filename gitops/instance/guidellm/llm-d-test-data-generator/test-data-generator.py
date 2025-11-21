@@ -1,6 +1,8 @@
 import csv
 import random
 import textwrap
+import argparse
+import sys
 import pandas as pd
 
 # -------------------------------
@@ -108,11 +110,83 @@ def pad_to_word_count(base_text: str, target_words: int, rng: random.Random) -> 
 # -------------------------------
 
 
-def main():
-    TARGET_PREFIX = 3000
-    TARGET_CONT = 3000
-    N_PAIRS = 5000
-    output_path = "prefix_caching_5000_pairs_side_by_side.csv"
+def parse_args(argv=None):
+    """Parse command line arguments.
+
+    Only --start-index was requested; a few extra optional args are provided as
+    low-risk conveniences for smaller test runs or tuning without editing code.
+    """
+    p = argparse.ArgumentParser(
+        description="Generate paired prefix + continuation prompts for cache-aware routing demos"
+    )
+    p.add_argument(
+        "--start-index",
+        type=int,
+        default=1,
+        help="Starting pair id (inclusive). Defaults to 1.",
+    )
+    p.add_argument(
+        "--num-pairs",
+        type=int,
+        default=5000,
+        help="Number of pairs to generate beginning at start-index. Defaults to 5000.",
+    )
+    p.add_argument(
+        "--target-prefix-words",
+        type=int,
+        default=5000,
+        help="Word count for each prefix section. Defaults to 3000.",
+    )
+    p.add_argument(
+        "--target-continuation-words",
+        type=int,
+        default=1000,
+        help="Word count for each continuation section. Defaults to 3000.",
+    )
+    p.add_argument(
+        "--output-prefix-csv",
+        type=str,
+        default="pairs.csv",
+        help="Output CSV (side-by-side prefix + full prompt).",
+    )
+    p.add_argument(
+        "--output-guidellm-csv",
+        type=str,
+        default="prompts.csv",
+        help="Output CSV formatted for Guidellm consumption.",
+    )
+    p.add_argument(
+        "--chunk-size",
+        type=int,
+        default=200,
+        help="Number of prefix prompts before interleaving same number of continuation prompts (spacing). Defaults to 200.",
+    )
+    p.add_argument(
+        "--output-tokens",
+        type=int,
+        default=250,
+        help="Synthetic output token count annotation for each prompt row. Defaults to 250.",
+    )
+    args = p.parse_args(argv)
+    if args.start_index < 1:
+        p.error("--start-index must be >= 1")
+    if args.num_pairs < 1:
+        p.error("--num-pairs must be >= 1")
+    if args.chunk_size < 1:
+        p.error("--chunk-size must be >= 1")
+    if args.output_tokens < 1:
+        p.error("--output-tokens must be >= 1")
+    return args
+
+
+def main(argv=None):
+    args = parse_args(argv)
+
+    TARGET_PREFIX = args.target_prefix_words
+    TARGET_CONT = args.target_continuation_words
+    N_PAIRS = args.num_pairs
+    START_INDEX = args.start_index
+    output_path = args.output_prefix_csv
 
     prefix_base_template = make_base_prefix()
     continuation_base = make_base_continuation()
@@ -127,8 +201,8 @@ def main():
         writer.writerow(
             ["pair_id", "prompt_1_prefix", "prompt_2_prefix_plus_continuation"]
         )
-
-        for i in range(1, N_PAIRS + 1):
+        end_index_exclusive = START_INDEX + N_PAIRS
+        for i in range(START_INDEX, end_index_exclusive):
             # Slightly customize the prefix so each pair is different
             prefix_intro = (
                 f"This is pair {i}, which demonstrates a long shared prefix that an engine "
@@ -142,7 +216,7 @@ def main():
             full_prompt = prefix_text + " " + continuation_text
 
             # Quick sanity checks for first few pairs
-            if i <= 3:
+            if i < START_INDEX + 3:
                 assert word_count(prefix_text) == TARGET_PREFIX, (
                     f"Prefix length mismatch for pair {i}"
                 )
@@ -152,7 +226,9 @@ def main():
 
             writer.writerow([i, prefix_text, full_prompt])
 
-    print(f"Done. Wrote {N_PAIRS} pairs to {output_path}. Formatting for guidellm...")
+    print(
+        f"Done. Wrote {N_PAIRS} pairs (ids {START_INDEX}..{START_INDEX + N_PAIRS - 1}) to {output_path}. Formatting for guidellm..."
+    )
 
     # Format for Guidellm.
     df = pd.read_csv(output_path)
@@ -162,22 +238,24 @@ def main():
     first = first_prompts.tolist()
     second = second_prompts.tolist()
 
-    # put prompts 200 spots apart
-    CHUNK_SIZE = 200
+    # spacing between prefix and continuation blocks when interleaving
+    CHUNK_SIZE = args.chunk_size
     combined = []
     for i in range(0, len(first), CHUNK_SIZE):
         combined.extend(first[i : i + CHUNK_SIZE])
         combined.extend(second[i : i + CHUNK_SIZE])
 
-    # make 250 output tokens
-    OUTPUT_TOKENS = 250
-    OUTPUT_PATH = "guidellm_formatted_prompts.csv"
+    # annotate with synthetic output tokens count
+    OUTPUT_TOKENS = args.output_tokens
+    OUTPUT_PATH = args.output_guidellm_csv
     save_df = pd.DataFrame(combined, columns=["prompt"])
     save_df["output_tokens_count"] = OUTPUT_TOKENS
     save_df.to_csv(OUTPUT_PATH, index=False)
 
-    print(f"Done. Wrote {N_PAIRS} pairs to {OUTPUT_PATH}.")
+    print(
+        f"Done. Wrote {N_PAIRS} pairs (ids {START_INDEX}..{START_INDEX + N_PAIRS - 1}) to {OUTPUT_PATH}."
+    )
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
