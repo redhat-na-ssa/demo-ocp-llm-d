@@ -2,10 +2,30 @@
 
 TARGET=http://<gateway-hostname>/<namespace>/<llm-d-instance>
 MODEL=Qwen/Qwen3-4B
+SCENARIO_NAME="llm-d-intelligent-inference-x2-"
+MAX_SECONDS=120
 
-guidellm benchmark --target $TARGET --model $MODEL --data prompts-10.csv --rate-type concurrent --rate 10
-guidellm benchmark --target $TARGET --model $MODEL --data prompts-25.csv --rate-type concurrent --rate 25
-guidellm benchmark --target $TARGET --model $MODEL --data prompts-50.csv --rate-type concurrent --rate 50
-guidellm benchmark --target $TARGET --model $MODEL --data prompts-100.csv --rate-type concurrent --rate 100
-guidellm benchmark --target $TARGET --model $MODEL --data prompts-250.csv --rate-type concurrent --rate 250
-guidellm benchmark --target $TARGET --model $MODEL --data prompts-500.csv --rate-type concurrent --rate 500
+# List of pairs: rate and corresponding data file
+BENCHMARKS=(
+  "10 prompts-10.csv"
+  "25 prompts-25.csv"
+  "50 prompts-50.csv"
+  "100 prompts-100.csv"
+  "250 prompts-250.csv"
+  "500 prompts-500.csv"
+)
+
+# Loop through the list and run guidellm benchmark for each pair
+for benchmark in "${BENCHMARKS[@]}"; do
+  RATE=$(echo $benchmark | awk '{print $1}')
+  DATA=$(echo $benchmark | awk '{print $2}')
+  
+  echo "Running benchmark with rate=$RATE and data=$DATA"
+  guidellm benchmark run --target $TARGET \
+    --model $MODEL \
+    --data $DATA \
+    --rate-type concurrent \
+    --rate $RATE \
+    --max-seconds $MAX_SECONDS \
+    --output-path $SCENARIO_NAME-$RATE.json
+done
