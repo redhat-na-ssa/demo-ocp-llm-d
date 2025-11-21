@@ -6,15 +6,11 @@ A tool for generating synthetic test data to benchmark LLM-D (Distributed LLM Se
 
 This generator creates paired prompts that demonstrate prefix caching capabilities in distributed LLM systems. It generates:
 
-- **5,000 prompt pairs** with shared prefixes to simulate real-world caching scenarios
-- **Long-form content** with 3,000-word prefixes and 3,000-word continuations
-- **Strategically spaced prompts** to maximize cache hits and demonstrate routing efficiency
+- **Prompt pairs** with shared prefixes to simulate real-world caching scenarios
+- **Long-form content** with word prefixes and word continuations
+- **Spaced prompts** to simulate multi-turn request patters
 
-The generated data is ideal for testing:
-- Prefix caching effectiveness
-- Request routing optimization
-- Performance under concurrent load
-- Cache reuse patterns in LLM-D deployments
+The generated data is ideal for demonstrating benefits of prefix cache aware routing for multi-turn request patterns.
 
 ## Installation
 
@@ -29,33 +25,43 @@ pip install -r requirements.txt
 Run the generator:
 
 ```bash
-python test-data-generator.py
+python test-data-generator.py \
+   --target-prefix-words 5000 \
+   --target-continuation-words 1000 \
+   --num-pairs 300 \
+   --chunk-size 50 \
+   --output-tokens 250
 ```
 
 This creates two files:
 
-1. **`prefix_caching_5000_pairs_side_by_side.csv`**
+1. **`pairs.csv`**
    - Side-by-side format of all prompt pairs
    - Useful for manual inspection and analysis
    - Columns: `pair_id`, `prompt_1_prefix`, `prompt_2_prefix_plus_continuation`
 
-2. **`guidellm_formatted_prompts.csv`**
+2. **`prompts.csv`**
    - Formatted for GuideLLM benchmarking
-   - Prompts spaced 200 spots apart to optimize cache hits
-   - Columns: `prompt`, `output_tokens_count` (fixed at 250 tokens)
+   - Prompts spaced `chunk-size` spots apart to demonstrate mulit-turn pattern
+   - Columns: `prompt`, `output_tokens_count` (fixed at `output-tokens` tokens)
+
+We can generate a separate test dataset for each concurrency range with:
+
+```bash
+./generate-all.sh
+```
 
 ### How It Works
 
 The generator:
-1. Creates a base prefix (3,000 words) about prefix caching concepts
-2. Creates a continuation (3,000 words) that extends the prefix
-3. Generates 5,000 unique pairs with slight variations
-4. Interleaves prompts in chunks of 200 to maximize cache effectiveness
-5. Formats output for GuideLLM consumption
+1. Creates a base prompt of `--target-prefix-words` with a unique first word per prompt
+2. Creates a second prompt with the base prompt + `--target-continuation-words` 
+3. Interleaves prompts in `--chunk-size` to simulate multi-turn request pattern
+4. Outputs in format compatible with `guidellm`
 
 ## Benchmarking with GuideLLM
 
-Use `guidellm_formatted_prompts.csv` as your data source for benchmarking LLM-D deployments.
+Use `prompts.csv` as your data source for benchmarking LLM-D deployments.
 
 ### Basic Benchmark
 
@@ -63,8 +69,7 @@ Use `guidellm_formatted_prompts.csv` as your data source for benchmarking LLM-D 
 guidellm benchmark \
     --target http://<gateway-hostname>/<namespace>/<llm-d-instance> \
     --model openai/gpt-oss-20b \
-    --data guidellm_formatted_prompts.csv \
+    --data prompts.csv \
     --rate-type concurrent \
-    --rate 50,25,10,5,1 \
-    --max-seconds 120
+    --rate 25
 ```
