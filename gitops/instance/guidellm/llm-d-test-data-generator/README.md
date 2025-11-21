@@ -45,6 +45,12 @@ This creates two files:
    - Prompts spaced `chunk-size` spots apart to demonstrate mulit-turn pattern
    - Columns: `prompt`, `output_tokens_count` (fixed at `output-tokens` tokens)
 
+We can generate a separate test dataset for each concurrency range with:
+
+```bash
+./generate-all.sh
+```
+
 ### How It Works
 
 The generator:
