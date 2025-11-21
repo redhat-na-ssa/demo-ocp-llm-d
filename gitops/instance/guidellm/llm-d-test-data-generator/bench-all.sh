@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TARGET=http://<gateway-hostname>/<namespace>/<llm-d-instance>
-MODEL=openai/gpt-oss-20b
+MODEL=Qwen/Qwen3-4B
 
 guidellm benchmark --target $TARGET --model $MODEL --data prompts-10.csv --rate-type concurrent --rate 10
 guidellm benchmark --target $TARGET --model $MODEL --data prompts-25.csv --rate-type concurrent --rate 25

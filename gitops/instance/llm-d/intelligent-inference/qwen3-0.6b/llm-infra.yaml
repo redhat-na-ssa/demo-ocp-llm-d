@@ -4,10 +4,10 @@ metadata:
   name: qwen
   namespace: demo-llm
 spec:
-  replicas: 2
+  replicas: 4
   model:
-    uri: hf://Qwen/Qwen3-0.6B
-    name: Qwen/Qwen3-0.6B
+    uri: hf://Qwen/Qwen3-4B
+    name: Qwen/Qwen3-4B
   router:
     scheduler:
       template:
