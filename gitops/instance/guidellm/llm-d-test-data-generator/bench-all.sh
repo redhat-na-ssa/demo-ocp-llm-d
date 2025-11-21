@@ -7,12 +7,12 @@ MAX_SECONDS=120
 
 # List of pairs: rate and corresponding data file
 BENCHMARKS=(
-  "10 prompts-10.csv"
-  "25 prompts-25.csv"
-  "50 prompts-50.csv"
-  "100 prompts-100.csv"
-  "250 prompts-250.csv"
   "500 prompts-500.csv"
+  "250 prompts-250.csv"
+  "100 prompts-100.csv"
+  "50 prompts-50.csv"
+  "25 prompts-25.csv"
+  "10 prompts-10.csv"
 )
 
 # Loop through the list and run guidellm benchmark for each pair
