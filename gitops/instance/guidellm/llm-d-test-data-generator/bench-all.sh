@@ -2,7 +2,7 @@
 
 TARGET=http://<gateway-hostname>/<namespace>/<llm-d-instance>
 MODEL=Qwen/Qwen3-4B
-SCENARIO_NAME="llm-d-intelligent-inference-x2-"
+SCENARIO_NAME="llm-d-intelligent-inference-x2"
 MAX_SECONDS=120
 
 # List of pairs: rate and corresponding data file
@@ -29,3 +29,8 @@ for benchmark in "${BENCHMARKS[@]}"; do
     --max-seconds $MAX_SECONDS \
     --output-path $SCENARIO_NAME-$RATE.json
 done
+
+# Tar all the JSON output files
+echo "Creating tar archive of benchmark results..."
+tar -cf $SCENARIO_NAME.tar $SCENARIO_NAME-*.json
+echo "Archive created: $SCENARIO_NAME.tar"
