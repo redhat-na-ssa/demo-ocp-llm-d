@@ -18,8 +18,8 @@ python prefix-cache-generator.py
 ```
 
 **Output:**
-- `prefix_caching_5000_pairs_side_by_side.csv` - All prompt pairs for inspection
-- `guidellm_formatted_prompts.csv` - Ready for benchmarking with guidellm
+- `prefix-pairs.csv` - All prompt pairs for inspection
+- `prefix-prompts.csv` - Ready for benchmarking with guidellm
 
 [→ See detailed documentation below](#prefix-cache-generator)
 
@@ -30,10 +30,8 @@ python prefix-cache-generator.py
 Tests **mixed workload handling** by generating requests of different sizes with configurable ratios.
 
 **Key Features:**
-- Configurable prompt sizes (N words and M words)
-- Adjustable ratio of small to large requests
-- Unique indexing prevents prefix cache interference
-- Flexible interleaving patterns
+- Generates unique prompts with different workload shapes (size N and size M)
+- Useful for benchmarking heterogeneous workloads in `llm-d` (e.g. for P/D disagg)
 
 **Use this generator when you want to:**
 - Test performance with mixed request sizes
@@ -43,19 +41,11 @@ Tests **mixed workload handling** by generating requests of different sizes with
 
 **Quick Start:**
 ```bash
-# Default: 4:1 ratio of 1000-word to 20,000-word prompts
 python heterogeneous-workload-generator.py
-
-# Custom workload
-python heterogeneous-workload-generator.py \
-  --workload-n-words 500 \
-  --workload-m-words 5000 \
-  --total-prompts 10000 \
-  --ratio-n-to-m 3
 ```
 
 **Output:**
-- `heterogeneous_workload.csv` - Ready for benchmarking with guidellm
+- `heterogeneous-prompts.csv` - Ready for benchmarking with guidellm
 
 [→ See detailed documentation below](#heterogeneous-workload-generator)
 

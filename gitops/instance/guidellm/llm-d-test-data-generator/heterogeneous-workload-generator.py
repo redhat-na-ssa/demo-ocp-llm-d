@@ -110,8 +110,8 @@ def main():
     parser.add_argument(
         "--output-file",
         type=str,
-        default="heterogeneous_workload.csv",
-        help="Output CSV file path (default: heterogeneous_workload.csv)"
+        default="heterogeneous-prompts.csv",
+        help="Output CSV file path (default: heterogeneous-prompts.csv)"
     )
     parser.add_argument(
         "--seed",

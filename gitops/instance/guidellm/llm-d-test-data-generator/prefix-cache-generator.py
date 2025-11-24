@@ -146,13 +146,13 @@ def parse_args(argv=None):
     p.add_argument(
         "--output-prefix-csv",
         type=str,
-        default="pairs.csv",
+        default="prefix-pairs.csv",
         help="Output CSV (side-by-side prefix + full prompt).",
     )
     p.add_argument(
         "--output-guidellm-csv",
         type=str,
-        default="prompts.csv",
+        default="prefix-prompts.csv",
         help="Output CSV formatted for Guidellm consumption.",
     )
     p.add_argument(
