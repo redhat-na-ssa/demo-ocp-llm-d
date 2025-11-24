@@ -17,8 +17,13 @@ spec:
       - name: main
         env:
           # disable uvicorn access log to reduce log noise
+          # Enable KV cache transfer via NixlConnector (RDMA-based)
           - name: VLLM_ADDITIONAL_ARGS
-            value: '--disable-uvicorn-access-log'
+            value: "--disable-uvicorn-access-log --kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}'"
+          - name: VLLM_NIXL_SIDE_CHANNEL_HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
         resources:
           limits:
             cpu: '4'
@@ -48,8 +53,13 @@ spec:
         - name: main
           env:
             # disable uvicorn access log to reduce log noise
+            # Enable KV cache transfer via NixlConnector (RDMA-based)
             - name: VLLM_ADDITIONAL_ARGS
-              value: '--disable-uvicorn-access-log'
+              value: "--disable-uvicorn-access-log --kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}'"
+            - name: VLLM_NIXL_SIDE_CHANNEL_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
           resources:
             limits:
               cpu: '4'
