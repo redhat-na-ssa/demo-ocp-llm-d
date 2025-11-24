@@ -1,30 +1,20 @@
 # LLM-D Synthetic Test Data Generators
 
-A collection of tools for generating synthetic test data to benchmark LLM-D (Distributed LLM Serving) systems under different workload scenarios.
+A collection of tools for generating synthetic test data to demonstrate `llm-d` well-lit paths.
 
 ## Overview
 
-This repository contains two specialized data generators designed to test different aspects of LLM serving performance:
+There are two synthetic data generators.
 
 ### 1. Prefix Cache Generator ([prefix-cache-generator.py](prefix-cache-generator.py))
 
 Tests **prefix caching effectiveness** by generating prompt pairs with shared prefixes.
-
-**Key Features:**
-- Generates 5,000 prompt pairs with shared 3,000-word prefixes
-- Tests cache reuse and request routing optimization
-- Prompts strategically spaced to maximize cache hits
-- Ideal for benchmarking distributed routing intelligence
-
-**Use this generator when you want to:**
-- Test prefix caching capabilities
-- Measure cache hit rates and routing efficiency
-- Benchmark performance improvements from caching
-- Evaluate distributed request routing strategies
+- Generates prompt pairs with shared prefixes to simulate multi-turn request patterns
+- Useful for benchmarking efficiency of prefix-cache aware routing
 
 **Quick Start:**
 ```bash
-python prefix-cache-generator.py
+python prefix-cache-generator.py 
 ```
 
 **Output:**
