@@ -140,7 +140,7 @@ cat <<JSON
 JSON
 }
 
-curl -s -X POST http://${INFERENCE_URL}/demo-llm/${LLM_SVC}/v1/completions \
+curl -s -X POST http://a970653680479411ea2687bb74860cd4-328874611.us-east-2.elb.amazonaws.com/demo-llm/qwen/v1/completions \
   -H "Content-Type: application/json" \
   -d "$(llm_post_data)" | jq .choices[0].text
 ```
