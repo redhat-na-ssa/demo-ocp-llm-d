@@ -60,24 +60,6 @@ spec:
   template:
     containers:
       - name: main
-        command:
-          - vllm
-          - serve
-          - /mnt/models
-        args:
-            - --served-model-name
-            - Qwen/Qwen3-0.6B
-            - --port
-            - "8001"
-            - --enable-ssl-refresh
-            - --ssl-certfile
-            - /etc/ssl/certs/tls.crt
-            - --ssl-keyfile
-            - /etc/ssl/certs/tls.key
-            - --enable-log-requests
-            - --kv_transfer_config 
-            - '{"kv_connector":"NixlConnector","kv_role":"kv_both"}'
-            - --disable-uvicorn-access-log
         env:
           # Pod IP for KV transfer side channel
           - name: VLLM_NIXL_SIDE_CHANNEL_HOST
@@ -117,24 +99,6 @@ spec:
     template:
       containers:
         - name: main
-          command:
-            - vllm
-            - serve
-            - /mnt/models
-          args:
-            - --served-model-name
-            - Qwen/Qwen3-0.6B
-            - --port
-            - "8000"
-            - --enable-ssl-refresh
-            - --ssl-certfile
-            - /etc/ssl/certs/tls.crt
-            - --ssl-keyfile
-            - /etc/ssl/certs/tls.key
-            - --enable-log-requests
-            - --kv_transfer_config 
-            - '{"kv_connector":"NixlConnector","kv_role":"kv_both"}'
-            - --disable-uvicorn-access-log
           env:
             - name: VLLM_NIXL_SIDE_CHANNEL_HOST
               valueFrom:
