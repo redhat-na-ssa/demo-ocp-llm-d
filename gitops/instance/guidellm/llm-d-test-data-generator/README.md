@@ -1,18 +1,11 @@
-# LLM-D Test Data Generator
+# LLM-D Synthetic Test Data Generators
 
-A tool for generating synthetic test data to benchmark LLM-D (Distributed LLM Serving) systems, specifically designed to test prefix caching behavior and performance under various load conditions.
+A collection of tools for generating synthetic test data to demonstrate `llm-d` well-lit paths.
+
 
 ## Overview
 
-This generator creates paired prompts that demonstrate prefix caching capabilities in distributed LLM systems. It generates:
-
-- **Prompt pairs** with shared prefixes to simulate real-world caching scenarios
-- **Long-form content** with word prefixes and word continuations
-- **Spaced prompts** to simulate multi-turn request patters
-
-The generated data is ideal for demonstrating benefits of prefix cache aware routing for multi-turn request patterns.
-
-## Installation
+### Installation
 
 Install the required dependencies:
 
@@ -20,56 +13,49 @@ Install the required dependencies:
 pip install -r requirements.txt
 ```
 
-## Generating Test Data
+There are two synthetic data generators.
 
-Run the generator:
+### 1. Prefix Cache Generator ([prefix-cache-generator.py](prefix-cache-generator.py))
 
+Tests **prefix caching effectiveness** by generating prompt pairs with shared prefixes.
+- Generates prompt pairs with shared prefixes to simulate multi-turn request patterns
+- Useful for benchmarking efficiency of prefix-cache aware routing
+
+**Quick Start:**
 ```bash
-python test-data-generator.py \
-   --target-prefix-words 5000 \
-   --target-continuation-words 1000 \
-   --num-pairs 300 \
-   --chunk-size 50 \
-   --output-tokens 250
+python prefix-cache-generator.py 
 ```
 
-This creates two files:
+**Output:**
+- `prefix-pairs.csv` - All prompt pairs for inspection
+- `prefix-prompts.csv` - Ready for benchmarking with guidellm
 
-1. **`pairs.csv`**
-   - Side-by-side format of all prompt pairs
-   - Useful for manual inspection and analysis
-   - Columns: `pair_id`, `prompt_1_prefix`, `prompt_2_prefix_plus_continuation`
+[→ See detailed documentation below](#prefix-cache-generator)
 
-2. **`prompts.csv`**
-   - Formatted for GuideLLM benchmarking
-   - Prompts spaced `chunk-size` spots apart to demonstrate mulit-turn pattern
-   - Columns: `prompt`, `output_tokens_count` (fixed at `output-tokens` tokens)
+---
 
-We can generate a separate test dataset for each concurrency range with:
+### 2. Heterogeneous Workload Generator ([heterogeneous-workload-generator.py](heterogeneous-workload-generator.py))
 
+Tests **mixed workload handling** by generating requests of different sizes with configurable ratios.
+
+**Key Features:**
+- Generates unique prompts with different workload shapes (size N and size M)
+- Useful for benchmarking heterogeneous workloads in `llm-d` (e.g. for P/D disagg)
+
+**Use this generator when you want to:**
+- Test performance with mixed request sizes
+- Simulate realistic production traffic patterns
+- Measure how systems handle workload transitions
+- Benchmark resource allocation strategies
+
+**Quick Start:**
 ```bash
-./generate-all.sh
+python heterogeneous-workload-generator.py
 ```
 
-### How It Works
+**Output:**
+- `heterogeneous-prompts.csv` - Ready for benchmarking with guidellm
 
-The generator:
-1. Creates a base prompt of `--target-prefix-words` with a unique first word per prompt
-2. Creates a second prompt with the base prompt + `--target-continuation-words` 
-3. Interleaves prompts in `--chunk-size` to simulate multi-turn request pattern
-4. Outputs in format compatible with `guidellm`
+[→ See detailed documentation below](#heterogeneous-workload-generator)
 
-## Benchmarking with GuideLLM
 
-Use `prompts.csv` as your data source for benchmarking LLM-D deployments.
-
-### Basic Benchmark
-
-```bash
-guidellm benchmark \
-    --target http://<gateway-hostname>/<namespace>/<llm-d-instance> \
-    --model openai/gpt-oss-20b \
-    --data prompts.csv \
-    --rate-type concurrent \
-    --rate 25
-```
