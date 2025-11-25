@@ -2,9 +2,6 @@ apiVersion: serving.kserve.io/v1alpha1
 kind: LLMInferenceService
 metadata:
   name: qwen-pd
-  annotations:
-    # RoCE network required for KV cache transfer via RDMA
-    k8s.v1.cni.cncf.io/networks: roce-p2
 spec:
   # Main/decode pool replica count
   replicas: 1
@@ -40,9 +37,9 @@ spec:
                 apiVersion: inference.networking.x-k8s.io/v1alpha1
                 kind: EndpointPickerConfig
                 plugins:
-                - type: pd-profile-handler  # Separates prefill and decode requests
+                - type: pd-profile-handler
                   parameters:
-                    threshold: 0  # Always separate (0 = all requests use PD separation)
+                    threshold: 0
                 - type: prefill-header-handler
                 - type: prefill-filter
                 - type: decode-filter
@@ -63,10 +60,25 @@ spec:
   template:
     containers:
       - name: main
+        command:
+          - vllm
+          - serve
+          - /mnt/models
+        args:
+            - --served-model-name
+            - Qwen/Qwen3-0.6B
+            - --port
+            - "8001"
+            - --enable-ssl-refresh
+            - --ssl-certfile
+            - /etc/ssl/certs/tls.crt
+            - --ssl-keyfile
+            - /etc/ssl/certs/tls.key
+            - --enable-log-requests
+            - --kv_transfer_config 
+            - '{"kv_connector":"NixlConnector","kv_role":"kv_both"}'
+            - --disable-uvicorn-access-log
         env:
-          # Enable RDMA for KV cache transfer
-          - name: KSERVE_INFER_ROCE
-            value: "true"
           # Pod IP for KV transfer side channel
           - name: VLLM_NIXL_SIDE_CHANNEL_HOST
             valueFrom:
@@ -74,23 +86,18 @@ spec:
                 fieldPath: status.podIP
           # Enable KV cache transfer via NixlConnector (RDMA-based)
           - name: VLLM_ADDITIONAL_ARGS
-            value: "--kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}'"
-          # UCX configuration for RDMA transport
-          - name: UCX_PROTO_INFO
-            value: "y"
-          - name: UCX_TLS
-            value: "rc,sm,self,cuda_copy,cuda_ipc,gdr_copy"
+            value: "--kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}' --disable-uvicorn-access-log"
+          - name: VLLM_LOGGING_LEVEL
+            value: "DEBUG"
         resources:
           limits:
             cpu: '4'
-            memory: 16Gi
+            memory: 8Gi
             nvidia.com/gpu: "1"
-            # rdma/roce_gdr: 1
           requests:
             cpu: '4'
-            memory: 16Gi
+            memory: 8Gi
             nvidia.com/gpu: "1"
-            # rdma/roce_gdr: 1
         livenessProbe:
           httpGet:
             path: /health
@@ -110,30 +117,42 @@ spec:
     template:
       containers:
         - name: main
+          command:
+            - vllm
+            - serve
+            - /mnt/models
+          args:
+            - --served-model-name
+            - Qwen/Qwen3-0.6B
+            - --port
+            - "8000"
+            - --enable-ssl-refresh
+            - --ssl-certfile
+            - /etc/ssl/certs/tls.crt
+            - --ssl-keyfile
+            - /etc/ssl/certs/tls.key
+            - --enable-log-requests
+            - --kv_transfer_config 
+            - '{"kv_connector":"NixlConnector","kv_role":"kv_both"}'
+            - --disable-uvicorn-access-log
           env:
-            - name: KSERVE_INFER_ROCE
-              value: "true"
             - name: VLLM_NIXL_SIDE_CHANNEL_HOST
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
             - name: VLLM_ADDITIONAL_ARGS
-              value: "--kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}'"
-            - name: UCX_PROTO_INFO
-              value: "y"
-            - name: UCX_TLS
-              value: "rc,sm,self,cuda_copy,cuda_ipc,gdr_copy"
+              value: "--kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}' --disable-uvicorn-access-log"
+            - name: VLLM_LOGGING_LEVEL
+              value: "DEBUG"
           resources:
             limits:
               cpu: '4'
-              memory: 32Gi
+              memory: 8Gi
               nvidia.com/gpu: "1"
-              # rdma/roce_gdr: 1
             requests:
               cpu: '4'
-              memory: 32Gi
+              memory: 8Gi
               nvidia.com/gpu: "1"
-              # rdma/roce_gdr: 1
           livenessProbe:
             httpGet:
               path: /health
