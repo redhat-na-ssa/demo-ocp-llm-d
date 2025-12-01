@@ -10,7 +10,6 @@ BENCHMARKS=(
   "25 heterogeneous-25.csv"
   "50 heterogeneous-50.csv"
   "100 heterogeneous-100.csv"
-  "250 heterogeneous-250.csv"
 )
 
 # Loop through the list and run guidellm benchmark for each pair
