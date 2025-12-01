@@ -1,7 +1,7 @@
 #!/bin/bash
 
-TARGET=http://<gateway-hostname>/<namespace>/<llm-d-instance>
-MODEL=openai/gpt-oss-20b
+TARGET=http://a970653680479411ea2687bb74860cd4-328874611.us-east-2.elb.amazonaws.com/demo-llm/qwen-pd
+MODEL=Qwen/Qwen3-0.6B
 SCENARIO_NAME="llm-d-pd"
 
 # List of pairs: rate and corresponding data file
@@ -27,6 +27,7 @@ for benchmark in "${BENCHMARKS[@]}"; do
     --max-requests $((RATE * 10)) \
     --output-path $SCENARIO_NAME-$RATE.json
 done
+
 
 # Tar all the JSON output files
 echo "Creating tar archive of benchmark results..."

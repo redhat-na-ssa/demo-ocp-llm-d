@@ -71,6 +71,16 @@ spec:
           # Enable KV cache transfer via NixlConnector (RDMA-based)
           - name: VLLM_ADDITIONAL_ARGS
             value: "--kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}' --disable-uvicorn-access-log --block-size 128"
+          - name: UCX_TLS
+            value: "sm,self,cuda_copy,cuda_ipc,tcp"
+          - name: UCX_PROTO_INFO
+            value: "y"
+          - name: UCX_RNDV_THRESH
+            value: "16384"
+          - name: UCX_MAX_EAGER_LANES
+            value: "1"
+          - name: UCX_MAX_RNDV_LANES
+            value: "1"
         resources:
           limits:
             cpu: '4'
@@ -108,6 +118,16 @@ spec:
               value: "--kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}' --disable-uvicorn-access-log --block-size 128"
             - name: VLLM_NIXL_ABORT_REQUEST_TIMEOUT
               value: "100000"
+            - name: UCX_TLS
+              value: "sm,self,cuda_copy,cuda_ipc,tcp"
+            - name: UCX_PROTO_INFO
+              value: "y"
+            - name: UCX_RNDV_THRESH
+              value: "16384"
+            - name: UCX_MAX_EAGER_LANES
+              value: "1"
+            - name: UCX_MAX_RNDV_LANES
+              value: "1"
           resources:
             limits:
               cpu: '4'

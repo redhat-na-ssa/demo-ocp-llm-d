@@ -80,14 +80,14 @@ def main():
     parser.add_argument(
         "--workload-n-words",
         type=int,
-        default=1000,
-        help="Number of input words for workload type N (default: 1000)"
+        default=500,
+        help="Number of input words for workload type N (default: 500)"
     )
     parser.add_argument(
         "--workload-m-words",
         type=int,
-        default=20000,
-        help="Number of input words for workload type M (default: 20000)"
+        default=10000,
+        help="Number of input words for workload type M (default: 10000)"
     )
     parser.add_argument(
         "--total-prompts",
