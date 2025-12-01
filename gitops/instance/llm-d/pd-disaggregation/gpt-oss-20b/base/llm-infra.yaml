@@ -6,7 +6,7 @@ metadata:
 spec:
   replicas: 1
   model:
-    uri: hf://openai/gpt-oss-20b
+    uri: <patch-me>
     name: openai/gpt-oss-20b
   router:
     scheduler:
@@ -64,11 +64,13 @@ spec:
           # disable uvicorn access log to reduce log noise
           # Enable KV cache transfer via NixlConnector (RDMA-based)
           - name: VLLM_ADDITIONAL_ARGS
-            value: "--disable-uvicorn-access-log --kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}' --block-size 128"
+            value: "--disable-uvicorn-access-log --kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}'"
           - name: VLLM_NIXL_SIDE_CHANNEL_HOST
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
+          - name: VLLM_LOGGING_LEVEL
+            value: "DEBUG"
         resources:
           limits:
             cpu: '4'
@@ -100,11 +102,13 @@ spec:
             # disable uvicorn access log to reduce log noise
             # Enable KV cache transfer via NixlConnector (RDMA-based)
             - name: VLLM_ADDITIONAL_ARGS
-              value: "--disable-uvicorn-access-log --kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}' --block-size 128"
+              value: "--disable-uvicorn-access-log --kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}'"
             - name: VLLM_NIXL_SIDE_CHANNEL_HOST
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+            - name: VLLM_LOGGING_LEVEL
+              value: "DEBUG"
           resources:
             limits:
               cpu: '4'
