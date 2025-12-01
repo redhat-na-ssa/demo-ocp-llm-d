@@ -80,35 +80,35 @@ def main():
     parser.add_argument(
         "--workload-n-words",
         type=int,
-        default=1000,
-        help="Number of input words for workload type N (default: 100)"
+        default=500,
+        help="Number of input words for workload type N (default: 500)"
     )
     parser.add_argument(
         "--workload-m-words",
         type=int,
-        default=20000,
-        help="Number of input words for workload type M (default: 500)"
+        default=10000,
+        help="Number of input words for workload type M (default: 10000)"
     )
     parser.add_argument(
         "--total-prompts",
         type=int,
         default=10000,
-        help="Total number of prompts to generate (default: 2000)"
+        help="Total number of prompts to generate (default: 10000)"
     )
     parser.add_argument(
         "--ratio-n-to-m",
         type=int,
-        default="4",
-        help="Ratio of N to M prompts (e.g., '4' means 4 N prompts for every 1 M prompt"
+        default="9",
+        help="Ratio of N to M prompts (e.g., '9' means 9 N prompts for every 1 M prompt"
     )
     parser.add_argument(
         "--output-tokens",
         type=int,
-        default=500,
-        help="Number of output tokens to generate (default: 500)"
+        default=250,
+        help="Number of output tokens to generate (default: 250)"
     )
     parser.add_argument(
-        "--output-file",
+        "--output-csv",
         type=str,
         default="heterogeneous-prompts.csv",
         help="Output CSV file path (default: heterogeneous-prompts.csv)"
@@ -119,6 +119,12 @@ def main():
         default=42,
         help="Random seed for reproducibility (default: 42)"
     )
+    parser.add_argument(
+        "--start-index",
+        type=int,
+        default=1,
+        help="Start index for the prompts (default: 1)"
+    )
 
     args = parser.parse_args()
 
@@ -127,8 +133,9 @@ def main():
     TOTAL_PROMPTS = args.total_prompts
     RATIO = args.ratio_n_to_m
     OUTPUT_TOKENS = args.output_tokens
-    OUTPUT_FILE = args.output_file
+    OUTPUT_FILE = args.output_csv
     SEED = args.seed
+    START_INDEX = args.start_index
 
     # Calculate number of prompts for each type based on ratio
     n_prompts_count = int(TOTAL_PROMPTS * (RATIO / (RATIO + 1)))
@@ -145,7 +152,7 @@ def main():
     workload_n = []
     for i in range(n_prompts_count):
         rng = random.Random(SEED + i)
-        prompt = make_prompt_with_index(i, N_WORDS, rng)
+        prompt = make_prompt_with_index(i + START_INDEX, N_WORDS, rng)
         assert word_count(prompt) == N_WORDS, f"Workload N prompt {i} has {word_count(prompt)} words, expected {N_WORDS}"
         workload_n.append({
             "prompt": prompt,
@@ -156,7 +163,7 @@ def main():
     workload_m = []
     for i in range(m_prompts_count):
         rng = random.Random(SEED + 10000 + i)  # Different seed range to ensure variety
-        prompt = make_prompt_with_index(n_prompts_count + i, M_WORDS, rng)
+        prompt = make_prompt_with_index(n_prompts_count + i + START_INDEX, M_WORDS, rng)
         assert word_count(prompt) == M_WORDS, f"Workload M prompt {i} has {word_count(prompt)} words, expected {M_WORDS}"
         workload_m.append({
             "prompt": prompt,

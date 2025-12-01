@@ -39,7 +39,7 @@ spec:
                 plugins:
                 - type: pd-profile-handler
                   parameters:
-                    threshold: 0
+                    threshold: 30000
                 - type: prefill-header-handler
                 - type: prefill-filter
                 - type: decode-filter
@@ -66,11 +66,11 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
+          - name: VLLM_NIXL_ABORT_REQUEST_TIMEOUT
+            value: "100000"
           # Enable KV cache transfer via NixlConnector (RDMA-based)
           - name: VLLM_ADDITIONAL_ARGS
-            value: "--kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}' --disable-uvicorn-access-log"
-          - name: VLLM_LOGGING_LEVEL
-            value: "DEBUG"
+            value: "--kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}' --disable-uvicorn-access-log --block-size 128"
         resources:
           limits:
             cpu: '4'
@@ -105,9 +105,9 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
             - name: VLLM_ADDITIONAL_ARGS
-              value: "--kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}' --disable-uvicorn-access-log"
-            - name: VLLM_LOGGING_LEVEL
-              value: "DEBUG"
+              value: "--kv_transfer_config '{\"kv_connector\":\"NixlConnector\",\"kv_role\":\"kv_both\"}' --disable-uvicorn-access-log --block-size 128"
+            - name: VLLM_NIXL_ABORT_REQUEST_TIMEOUT
+              value: "100000"
           resources:
             limits:
               cpu: '4'
