@@ -1,11 +1,43 @@
 apiVersion: v1
 kind: Pod
 metadata:
+  # generateName: guidellm-
   name: guidellm
 spec:
+  initContainers:
+  - name: init
+    image: registry.redhat.io/ubi9/ubi:latest
+    command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/sh
+
+        download_tokenizer_gpt-oss-20b(){
+          cd /config || return 0
+
+          printf "Attempting to download tokenizer files... "
+          curl -sLO https://huggingface.co/openai/gpt-oss-20b/raw/main/tokenizer_config.json || return 0
+          curl -sLO https://huggingface.co/openai/gpt-oss-20b/resolve/main/tokenizer.json || return 0
+          echo "[done]"
+        }
+
+        download_tokenizer_gpt-oss-20b
+    resources:
+      limits:
+        cpu: 200m
+        memory: 32Mi
+      requests:
+        cpu: 200m
+        memory: 32Mi
+    volumeMounts:
+      - mountPath: /config
+        name: empty
+        subPath: config
   containers:
-  - name: guidellm
-    image: ghcr.io/vllm-project/guidellm:v0.3.1
+  - name: minion
+    image: ghcr.io/vllm-project/guidellm:v0.3.0
+    # image: registry.redhat.io/rhel8/python-311
     command:
       - /bin/bash
       - -c
@@ -17,15 +49,62 @@ spec:
           sleep infinity
         }
 
+        cat <<EOF > /tmp/functions
+
+        run_guidellm(){
+
+          # GUIDELLM_TARGET=http://llm-service:8000
+          # GUIDELLM_RATE_TYPE=sweep
+          # GUIDELLM_MAX_SECONDS=30
+          # GUIDELLM_DATA="prompt_tokens=256,output_tokens=128"
+
+          echo "Attempting benchmark..."
+
+          # Edit the model name as needed
+          guidellm benchmark run \
+            --model gpt-oss-20b \
+            --data "prompt_tokens=512,output_tokens=256" \
+            --rate-type concurrent \
+            --rate 1,5,10,25 \
+            --max-seconds 30 \
+            --processor /config \
+            --output-path /results
+
+        }
+        EOF
+
+        . /tmp/functions
+        # Edit the target URL as needed
+        GUIDELLM_TARGET=${GUIDELLM_TARGET:-http://gpt-oss-20b-predictor:80}
+        export GUIDELLM_TARGET
+
+        echo "
+          # benchmarks will start after copying in the tokenizer
+          # verify model serving is running before copying files
+
+          GUIDELLM_TARGET=${GUIDELLM_TARGET}
+
+          oc cp tokenizer_config.json guidellm:/config
+          oc cp tokenizer.json guidellm:/config
+        "
+
+        # wait for files to be ready
+        until [ -e /config/tokenizer.json ]; do : ; done
+
+        # run until dizzy
+        until run_guidellm; do sleep 30; done
+
         debug
     resources:
-      limits:
-        cpu: '1'
-        memory: 1Gi
+      # limits:
+      #   cpu: '1'
+      #   memory: 1Gi
       requests:
-        cpu: '1'
-        memory: 1Gi
+        cpu: 600m
+        memory: 512Mi
     volumeMounts:
+      # - mountPath: /data
+      #   name: data
       - mountPath: /config
         name: empty
         subPath: config
@@ -34,3 +113,7 @@ spec:
   volumes:
     - name: empty
       emptyDir: {}
+    # - name: data
+    #   persistentVolumeClaim:
+    #     claimName: guidellm-data
+    #     defaultMode: 775
