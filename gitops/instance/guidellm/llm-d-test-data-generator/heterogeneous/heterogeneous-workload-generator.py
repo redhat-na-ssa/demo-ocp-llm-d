@@ -108,7 +108,7 @@ def main():
         help="Number of output tokens to generate (default: 250)"
     )
     parser.add_argument(
-        "--output-file",
+        "--output-csv",
         type=str,
         default="heterogeneous-prompts.csv",
         help="Output CSV file path (default: heterogeneous-prompts.csv)"
@@ -133,7 +133,7 @@ def main():
     TOTAL_PROMPTS = args.total_prompts
     RATIO = args.ratio_n_to_m
     OUTPUT_TOKENS = args.output_tokens
-    OUTPUT_FILE = args.output_file
+    OUTPUT_FILE = args.output_csv
     SEED = args.seed
     START_INDEX = args.start_index
 
