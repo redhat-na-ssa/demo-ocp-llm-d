@@ -1160,7 +1160,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "inference_pool_ready_pods{name=\"llm-d-gaie\"}",
+          "expr": "inference_pool_ready_pods{name=~\"$pool\"}",
           "interval": "",
           "legendFormat": "Ready Pods",
           "refId": "A"
@@ -1170,7 +1170,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "inference_pool_average_queue_size{name=\"llm-d-gaie\"}",
+          "expr": "inference_pool_average_queue_size{name=~\"$pool\"}",
           "interval": "",
           "legendFormat": "Average Queue Size",
           "refId": "B"
@@ -1243,7 +1243,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "inference_pool_average_kv_cache_utilization{name=\"llm-d-gaie\"}",
+          "expr": "inference_pool_average_kv_cache_utilization{name=~\"$pool\"}",
           "interval": "",
           "legendFormat": "Pool KV Cache Utilization",
           "refId": "A"
@@ -1309,7 +1309,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "inference_pool_per_pod_queue_size{name=\"llm-d-gaie\"}",
+          "expr": "inference_pool_per_pod_queue_size{name=~\"$pool\"}",
           "interval": "",
           "legendFormat": "Pod {{model_server_pod}}",
           "refId": "A"
@@ -1385,6 +1385,31 @@
         },
         "refresh": 1,
         "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(inference_pool_ready_pods, name)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Inference Pool",
+        "multi": false,
+        "name": "pool",
+        "options": [],
+        "query": {
+          "query": "label_values(inference_pool_ready_pods, name)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
         "type": "query"
       }
     ]
