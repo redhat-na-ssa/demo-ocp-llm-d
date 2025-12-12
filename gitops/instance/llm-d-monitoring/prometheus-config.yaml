@@ -136,12 +136,12 @@ data:
       scheme: http
       bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
       relabel_configs:
-      - source_labels: [__meta_kubernetes_service_name]
+      - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_component]
         action: keep
-        regex: 'llm-d-gaie-epp'
+        regex: 'llminferenceservice-router-scheduler'
       - source_labels: [__meta_kubernetes_endpoint_port_name]
         action: keep
-        regex: 'http-metrics'
+        regex: 'metrics|http-metrics'
       - source_labels: [__address__]
         action: replace
         regex: '([^:]+):.*'
