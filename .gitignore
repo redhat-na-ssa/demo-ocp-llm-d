@@ -1,3 +1,6 @@
 scratch/
 tokenizer*.json
 **/charts
+.DS_Store
+*.csv
+*.json
