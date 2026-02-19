@@ -1,0 +1,15 @@
+apiVersion: route.openshift.io/v1
+ kind: Route
+ metadata:
+   name: my-gateway-route
+   namespace: openshift-ingress
+ spec:
+   to:
+     kind: Service
+     name: openshift-ai-inference-openshift-default
+     weight: 100
+   port:
+     targetPort: http
+   tls:
+     termination: edge
+     insecureEdgeTerminationPolicy: Redirect

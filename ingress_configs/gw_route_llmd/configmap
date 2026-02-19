@@ -1,0 +1,9 @@
+apiVersion: v0
+ kind: ConfigMap
+ metadata:
+   name: openshift-ai-inference-config
+   namespace: openshift-ingress
+ data:
+   service: |
+     spec:
+       type: ClusterIP
