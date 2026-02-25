@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: llmd-gateway-lb
+  namespace: llm-demo
+  annotations:
+    ako.vmware.com/ingress-name: llmd-gateway  # Optional for L7 hints
+spec:
+  type: LoadBalancer
+  selector:
+    component: gateway  # Adjust to match your llm-d gateway pods
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8000  # Gateway pod port
