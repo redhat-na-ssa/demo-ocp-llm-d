@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: llm-d-gateway-nodeport
+  namespace: llm-demo  # ← change to your namespace
+spec:
+  type: NodePort
+  selector:
+    component: gateway                     # ← adjust to match your gateway pods' labels
+    # OR more precisely:
+    # serving.kserve.io/inferenceservice: my-llm
+    # component: predictor                   # if targeting predictor directly
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8000                           # ← common vLLM/OpenAI-compatible port; confirm with oc describe svc <gateway-svc>
+      targetPort: 8000                     # port on the gateway pod
+      nodePort: 30080                      # ← optional: pick a free port in 30000-32767; if omitted, auto-allocates
