@@ -17,7 +17,7 @@ Requires Gateway API CRDs (enabled in OpenShift 4.14+), MetalLB setup, and netwo
 
 ## Prerequisites
 
-- OpenShift 4.14+ (Gateway API GA in 4.14+; MetalLB Operator available)
+- OpenShift 4.19+ (Gateway API GA in 4.19+; MetalLB Operator available)
 - Bare-metal/on-premises cluster (no cloud LB)
 - llm-d deployed (InferenceService + gateway in e.g. `llm-demo` namespace)
 - Gateway API CRDs installed (`oc explain GatewayClass` should work)
@@ -29,43 +29,22 @@ Requires Gateway API CRDs (enabled in OpenShift 4.14+), MetalLB setup, and netwo
 
 Apply these files **separately** in order for a clean setup:
 
-1. `metallb-namespace.yaml`  
-   Creates the `metallb-system` namespace (if not using `openshift-operators`).
-
-2. `metallb-subscription.yaml`  
-   Subscribes to the MetalLB Operator from `redhat-operators` catalog.
-
-3. `metallb-instance.yaml`  
-   Deploys the MetalLB controller + speaker via `MetalLB` CR.
-
-4. `ipaddresspool.yaml`  
-   Defines an IP pool for LoadBalancer services (e.g., for llm-d gateway).
-
-5. `l2advertisement.yaml`  
-   Advertises the pool using Layer 2 mode (ARP/NDP) — most common for simple setups.
-
-6. `gatewayclass.yaml` (optional)  
-   Defines a GatewayClass (references MetalLB or uses default if Istio/Contour/etc.).
-
-7. `gateway.yaml`  
+1. `gateway.yaml`  
    Deploys a Gateway instance (LoadBalancer type, backed by MetalLB).
 
-8. `httproute-llmd.yaml`  
+1. `httproute-llmd.yaml`  
    Routes traffic to the llm-d gateway service via HTTPRoute.
-
-9. `kustomization.yaml` (optional)  
-   Kustomize overlay to apply everything at once (`oc apply -k .`).
 
 ## Quick Deploy Steps
 
 1. **Install MetalLB Operator** (if not already installed)
 
-   ```bash
-   oc apply -f metallb-namespace.yaml
-   oc apply -f metallb-subscription.yaml
-   ```
+```sh
+oc apply -f metallb-namespace.yaml
+oc apply -f metallb-subscription.yaml
+```
 
-Wait for CSV/InstallPlan:
+Wait for CSV/InstallPlan
 
 ```sh
 oc get clusterserviceversion -n metallb-system

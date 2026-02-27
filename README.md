@@ -148,6 +148,7 @@ curl -s -X POST http://a970653680479411ea2687bb74860cd4-328874611.us-east-2.elb.
 ## Additional Info
 
 - [Disconnected RHOAI Notes](gitops/disconnected/DISCONNECTED.md)
+- [Ingress Options](docs/INGRESS.md)
 - [Local Notes](docs/NOTES.md)
 - [Manual Steps](gitops/instance/llm-d/STEPS.md)
 - [Deploying a model by using the Distributed Inference Server with llm-d](https://access.redhat.com/articles/7131048)
