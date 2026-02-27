@@ -10,7 +10,7 @@
 **Quick Winner by Goal:**
 
 - **Best scale + performance overall**: MetalLB + Gateway API  
-- **Best with enterprise features**: Avi AKO  
+- **Alternative with enterprise features**: Avi AKO  
 - **Easiest moderate setup**: OpenShift Route
 - **Best raw speed (testing)**: NodePort
 
