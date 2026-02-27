@@ -18,7 +18,7 @@ Compared to Gateway API + MetalLB: Slightly higher overhead under extreme load d
 
 ## Prerequisites
 
-- OpenShift 4.10+ cluster (Routes are GA)
+- OpenShift 4.19+ cluster
 - llm-d deployed via Helm / OpenShift AI (with InferenceService and gateway pods running)
 - The llm-d gateway service exists (typically named something like `inference-gateway`, `llmd-gateway`, or `*-gateway-istio`)
 - Namespace where llm-d is installed (e.g., `llm-demo`)
@@ -30,9 +30,6 @@ Compared to Gateway API + MetalLB: Slightly higher overhead under extreme load d
 
 - `httproute-optional.yaml` (optional)  
   Example Gateway API HTTPRoute if you want to layer Gateway API semantics in front (requires Gateway API CRDs and controller enabled).
-
-- `kustomization.yaml` (optional)  
-  Kustomize overlay to apply all configs easily.
 
 ## Quick Deploy
 
@@ -57,8 +54,9 @@ Compared to Gateway API + MetalLB: Slightly higher overhead under extreme load d
 
 4. **Test the endpoint**
 
-   ```sh
-   curl -k https://<route-host>/v1/models
+```sh
+curl -k https://<route-host>/v1/models
+
 # or OpenAI-compatible chat completions
 curl https://<route-host>/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -66,4 +64,4 @@ curl https://<route-host>/v1/chat/completions \
     "model": "your-model",
     "messages": [{"role": "user", "content": "Hello!"}]
   }'
-  ```
+```
