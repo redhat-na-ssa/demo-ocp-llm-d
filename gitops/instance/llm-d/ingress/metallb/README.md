@@ -27,6 +27,8 @@ Requires Gateway API CRDs (enabled in OpenShift 4.14+), MetalLB setup, and netwo
 
 ## Files in this Directory
 
+**NEEDS REVIEW**
+
 Apply these files **separately** in order for a clean setup:
 
 1. `gateway.yaml`  
