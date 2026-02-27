@@ -16,5 +16,5 @@
 
 ## Configs
 
-[Avi Kubernetes Operator](../gitops/instance/ako/)
-[OAI Distributed Inference (LLM-d) Ingress Options](../gitops/instance/llm-d/ingress/)
+- [Avi Kubernetes Operator](../gitops/instance/ako/)
+- [OAI Distributed Inference (LLM-d) Ingress Options](../gitops/instance/llm-d/ingress/)
