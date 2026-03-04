@@ -9,7 +9,7 @@ spec:
     parametersRef:
       group: ""
       kind: ConfigMap
-      name: my-gateway-config
+      name: openshift-ai-inference-config
   listeners:
     - name: http
       port: 80
