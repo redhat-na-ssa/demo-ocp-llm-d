@@ -1,0 +1,17 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: openshift-ai-inference
+  namespace: openshift-ingress
+  annotations:
+    router.openshift.io/service-ca-certificate: 'true'
+spec:
+  to:
+    kind: Service
+    name: openshift-ai-inference-openshift-default
+    weight: 100
+  port:
+    targetPort: https
+  tls:
+    termination: reencrypt
+    insecureEdgeTerminationPolicy: Redirect
