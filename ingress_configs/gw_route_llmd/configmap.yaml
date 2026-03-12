@@ -5,5 +5,8 @@ metadata:
   namespace: openshift-ingress
 data:
   service: |
+    metadata:
+        annotations:
+            service.beta.openshift.io/serving-cert-secret-name: "openshift-ai-inference-tls"
     spec:
-      type: ClusterIP
+        type: ClusterIP
